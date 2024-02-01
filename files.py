@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Optional
 from pathlib import Path
+import hashlib
 import asyncio
 import json
 import gzip
@@ -85,6 +86,12 @@ class BinaryFile(DataFile):
             fout.write(self.data)
         self.unlock()
 
+    def get_hash(self) -> str:
+        if not self.data:
+            self.load_data()
+            if not self.data:
+                return None
+        return hashlib.md5(self.data).hexdigest()
 
 def exists(filepath):
     return Path(filepath).exists()
