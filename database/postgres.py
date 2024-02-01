@@ -43,4 +43,3 @@ class Postgres:
         finally:
             session.close()
 
-instance = Postgres()
