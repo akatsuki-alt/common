@@ -1,10 +1,10 @@
 from .database.postgres import Postgres
 from ossapi import Ossapi
-
-import config
+from config import Config
 
 STOPPED = False
 
-database = Postgres()
-ossapi: Ossapi(config.OSSAPI_ID, config.OSSAPI_SECRET)
+config = Config()
+database = Postgres(config.postgres_user, config.postgres_password, config.postgres_host, config.postgres_port)
+ossapi: Ossapi(config.ossapi_id, config.ossapi_secret)
 

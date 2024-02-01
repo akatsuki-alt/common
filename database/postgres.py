@@ -6,11 +6,9 @@ from contextlib      import contextmanager
 from .objects import Base
 
 import logging
-import config
-
 
 class Postgres:
-    def __init__(self, username=config.POSTGRES_USER, password=config.POSTGRES_PASSWORD, host=config.POSTGRES_HOST, port=config.POSTGRES_PORT) -> None:
+    def __init__(self, username, password, host, port) -> None:
         self.engine = create_engine(
             f'postgresql://{username}:{password}@{host}:{port}/{username}',
             pool_pre_ping=True,
