@@ -22,7 +22,7 @@ class DBBeatmapset(Base):
     title_unicode = Column('title_unicode', String)
     source = Column('source', String)
     mapper = Column('mapper', String)
-    nominators = Column('nominators', JSONB, default={'bancho': [], 'akatsuki': [], 'titanic': []})
+    nominators = Column('nominators', JSONB)
     tags = Column('tags', ARRAY(String))
     pack_tags = Column('pack_tags', ARRAY(String))
     genre = Column('genre', String)
@@ -59,7 +59,12 @@ class DBBeatmap(Base):
     hit_length = Column('hit_length', Integer)
     total_length = Column('total_length', Integer)
 
-    status = Column('status', JSONB, default={'bancho': -2, 'akatsuki': -2, 'titanic': -2})
+    count_circles = Column('count_circles', Integer)
+    count_sliders = Column('count_sliders', Integer)
+    count_spinners = Column('count_spinners', Integer)
+
+    status = Column('status', JSONB)
     
+    last_db_update = Column('last_db_update', DateTime(timezone=True), default=datetime.now())
     beatmapset = relationship('DBBeatmapset', back_populates='beatmaps')
     Index('beatmaps_id_idx', id)
