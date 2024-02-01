@@ -37,7 +37,6 @@ class DBBeatmapset(Base):
     submitted_date = Column('submitted_date', DateTime(timezone=True))
 
     beatmaps   = relationship('DBBeatmap', back_populates='beatmapset')
-    Index('beatmapsets_id_idx', id)
 
 class DBBeatmap(Base):
     
@@ -67,4 +66,3 @@ class DBBeatmap(Base):
     
     last_db_update = Column('last_db_update', DateTime(timezone=True), default=datetime.now())
     beatmapset = relationship('DBBeatmapset', back_populates='beatmaps')
-    Index('beatmaps_id_idx', id)
