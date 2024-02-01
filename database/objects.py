@@ -56,8 +56,9 @@ class DBBeatmap(Base):
     ar = Column('ar', Float)
     hp = Column('hp', Float)
     diff = Column('diff', Float)
-    length = Column('length', Integer)
-    
+    hit_length = Column('hit_length', Integer)
+    total_length = Column('total_length', Integer)
+
     status = Column('status', JSONB, default={'bancho': -2, 'akatsuki': -2, 'titanic': -2})
     
     beatmapset = relationship('DBBeatmapset', back_populates='beatmaps')
