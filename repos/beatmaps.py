@@ -1,6 +1,6 @@
 from ..database.objects import DBBeatmapset, DBBeatmap
+from ..utils import OSSAPI_GAMEMODES, download_beatmap
 from ossapi import Beatmap, Beatmapset
-from ..utils import OSSAPI_GAMEMODES
 from ..app import ossapi, database
 
 import logging
@@ -14,6 +14,8 @@ def _get_username(user_id: int) -> str:
         return None
 
 def _from_api_beatmap(beatmap: Beatmap) -> DBBeatmap:
+    if not download_beatmap(beatmap.id, check_MD5=beatmap.checksum):
+        logger.warn(f"Failed to download beatmap {beatmap.id}!")
     dbmap = DBBeatmap(
         id=beatmap.id,
         set_id=beatmap.beatmapset_id,
