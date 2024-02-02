@@ -41,6 +41,8 @@ def _from_api_beatmap(beatmap: Beatmap) -> DBBeatmap:
         'bancho': beatmap.status.value
     }
     for server in servers.servers:
+        if server.server_name == 'bancho':
+            continue
         dbmap.status[server.server_name] = server.get_map_status(beatmap.id)
     return dbmap
 
