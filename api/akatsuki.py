@@ -110,6 +110,12 @@ class AkatsukiAPI(ServerAPI):
             return
         return [self._convert_score(json, user_id, relax) for json in req.json()['scores']]
     
+    def get_user_pinned(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
+        req = self._get(f"https://akatsuki.gg/api/v1/users/scores/pinned?mode={mode}&p={page}&l={min(length, 100)}&rx={relax}&id={user_id}")
+        if not req.ok:
+            return
+        return [self._convert_score(json, user_id, relax) for json in req.json()['scores']]
+    
     def get_user_info(self, user_id: int) -> Tuple[User, List[Stats]] | None:
         req = self._get(f"https://akatsuki.gg/api/v1/users/full?id={user_id}")
         if not req.ok:
