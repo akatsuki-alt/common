@@ -56,6 +56,12 @@ def _ppy_download(beatmap_id) -> bool:
     file.save_data()
     return True
 
+def try_get(dikt: dict, key: str, default=None):
+    try:
+        return dikt[key]
+    except KeyError:
+        return default
+
 class Schedule:
     
     def __init__(self, hours: int, minutes: int, seconds: int) -> None:

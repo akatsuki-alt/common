@@ -1,6 +1,6 @@
 from common.database.objects import *
 from dataclasses import dataclass
-from typing import List
+from typing import Tuple, List
 
 import datetime
 
@@ -65,17 +65,84 @@ class Score:
             extra_metadata = self.extra_metadata
         )
 
+@dataclass
+class User:
+    
+    id: int = 0
+    clan_id: int = 0
+    server: str = None
+    username: str = None
+    username_history: List[str] = None
+    country: str = None
+    registered_on: datetime = None
+    latest_activity: datetime = None
+    favourite_mode: int = 0
+    followers: int = 0
+    banned: bool = False
+    
+    def to_db(self) -> DBUser:
+        return DBUser(
+            id = self.id,
+            clan_id = self.clan_id,
+            server = self.server,
+            username = self.username,
+            username_history = self.username_history,
+            country = self.country,
+            registered_on = self.registered_on,
+            latest_activity = self.latest_activity,
+            favourite_mode = self.favourite_mode,
+            followers = self.followers,
+            banned = self.banned
+        )
+
+@dataclass
+class Stats:
+    
+    server: str = None
+    user_id: int = 0
+    mode: int = 0
+    relax: int = 0
+    
+    ranked_score: int = 0
+    total_score: int = 0
+    play_count: int = 0
+    play_time: int = 0
+    replays_watched: int = 0
+    total_hits: int = 0
+    max_combo: int = 0
+    level: float = 0.0
+    accuracy: float = 0.0
+    pp: float = 0.0
+    
+    global_rank: int = 0
+    country_rank: int = 0
+    global_score_rank: int = 0
+    country_score_rank: int = 0
+    
+    xh_rank: int = 0
+    x_rank: int = 0
+    sh_rank: int = 0
+    s_rank: int = 0
+    a_rank: int = 0
+    b_rank: int = 0
+    c_rank: int = 0
+    d_rank: int = 0 
+    
+
 class ServerAPI:
     
     def __init__(self, server_name, pp_system):
         self.server_name = server_name
         self.pp_system = pp_system
 
-    def get_user_best(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score]:
+    def get_user_best(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
         return None
     
-    def get_user_1s(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score]:
+    def get_user_1s(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
         return None
     
-    def get_user_recent(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score]:
+    def get_user_recent(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
+        return None
+
+    def get_user_info(self, user_id: int) -> Tuple[User, List[Stats]] | None:
         return None
