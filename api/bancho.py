@@ -15,6 +15,10 @@ class BanchoAPI(ServerAPI):
         return [GameMode.OSU, GameMode.TAIKO, GameMode.CATCH, GameMode.MANIA][mode]
       
     def _convert_score(self, score: OssapiScore) -> Score:
+        if score.weight:
+            pp = score.weight.pp * 100/score.weight.percentage # Dear god
+        else:
+            pp = ossapi.score(mode=score.mode, score_id=score.id).pp
         return Score(
             id = score.id,
             user_id = score.user().id,
@@ -31,7 +35,7 @@ class BanchoAPI(ServerAPI):
             count_geki = score.statistics.count_geki,
             accuracy = score.accuracy*100,
             rank = score.rank.value,
-            pp = score.weight.pp * (100/score.weight.percentage) if score.weight else score.pp, # Dear god
+            pp = pp,
             score = score.score,
             mods = score.mods.value,
             mode = score.mode_int,
