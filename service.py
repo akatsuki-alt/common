@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 from typing import List
 
-from .database.objects import DBTask
-from .logging import get_logger
-from .utils import Schedule
-from .app import database
+from common.database.objects import DBTask
+from common.logging import get_logger
+from common.utils import Schedule
+from common.app import database
 
 import common.app as app
 import threading
@@ -83,7 +83,7 @@ class TaskedService(Service):
                     else:
                         with database.session as session:
                             if (dbtask := session.get(DBTask, task.task_name)):
-                                task.last_run = datetime.now()
+                                dbtask.last_run = datetime.now()
                             else:
                                 dbtask = DBTask(name=task.task_name, last_run=datetime.now())
                                 session.add(dbtask)
