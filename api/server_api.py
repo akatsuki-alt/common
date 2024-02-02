@@ -128,6 +128,35 @@ class Stats:
     c_rank: int = 0
     d_rank: int = 0 
     
+    def to_db(self) -> DBStats:
+        return DBStats(
+            server=self.server,
+            user_id=self.user_id,
+            mode=self.mode,
+            relax=self.relax,
+            ranked_score=self.ranked_score,
+            total_score=self.total_score,
+            play_count=self.play_count,
+            play_time=self.play_time,
+            replays_watched=self.replays_watched,
+            total_hits=self.total_hits,
+            max_combo=self.max_combo,
+            level=self.level,
+            accuracy=self.accuracy,
+            pp=self.pp,
+            global_rank=self.global_rank,
+            country_rank=self.country_rank,
+            global_score_rank=self.global_score_rank,
+            country_score_rank=self.country_score_rank,
+            xh_rank=self.xh_rank,
+            x_rank=self.x_rank,
+            sh_rank=self.sh_rank,
+            s_rank=self.s_rank,
+            a_rank=self.a_rank,
+            b_rank=self.b_rank,
+            c_rank=self.c_rank,
+            d_rank=self.d_rank
+        )
 
 class ServerAPI:
     
