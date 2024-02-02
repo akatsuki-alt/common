@@ -1,9 +1,9 @@
-from ..database.objects import DBBeatmapset, DBBeatmap
-from ..utils import OSSAPI_GAMEMODES, download_beatmap
-from ossapi import Beatmap, Beatmapset
-from ..app import ossapi, database
-
+from common.database.objects import DBBeatmapset, DBBeatmap
+from common.utils import OSSAPI_GAMEMODES, download_beatmap
+from common.app import ossapi, database
 from common.logging import get_logger
+
+from ossapi import Beatmap, Beatmapset
 
 logger = get_logger("repos.beatmaps")
 

@@ -3,7 +3,7 @@ from sqlalchemy.orm  import sessionmaker, Session
 from sqlalchemy      import create_engine
 from contextlib      import contextmanager
 
-from .objects import Base
+from common.database.objects import Base
 
 import logging
 

@@ -2,8 +2,8 @@ from datetime import datetime, timedelta
 
 from common.logging import get_logger
 
-from .files import BinaryFile, exists
-from .app import config
+from common.files import BinaryFile, exists
+from common.app import config
 
 import requests
 

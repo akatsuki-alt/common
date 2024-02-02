@@ -1,4 +1,4 @@
-from .database.postgres import Postgres
+from common.database.postgres import Postgres
 from ossapi import Ossapi
 from config import Config
 
