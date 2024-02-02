@@ -11,6 +11,13 @@ from sqlalchemy import *
 
 Base = declarative_base()
 
+class DBTask(Base):
+    
+    __tablename__ = "tasks"
+    
+    name = Column('name', String, primary_key=True)
+    last_run = Column('last_run', DateTime)
+
 class DBBeatmapset(Base):
     
     __tablename__ = 'beatmapsets'

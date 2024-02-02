@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from .files import BinaryFile, exists
 from .app import config
 
@@ -38,7 +40,6 @@ def _osudirect_download(beatmap_id) -> bool:
     file.save_data()
     return True
 
-
 def _ppy_download(beatmap_id) -> bool:
     response = requests.get(
         f"https://old.ppy.sh/osu/{beatmap_id}",
@@ -53,3 +54,14 @@ def _ppy_download(beatmap_id) -> bool:
     file.data = response.content
     file.save_data()
     return True
+
+class Schedule:
+    
+    def __init__(self, hours: int, minutes: int, seconds: int) -> None:
+        self.hours = hours
+        self.minutes = minutes
+        self.seconds = seconds
+    
+    def current_delta(self) -> timedelta:
+        now = datetime.now()
+        return (datetime(now.year, now.month, now.day, self.hours, self.minutes, self.seconds) - now)
