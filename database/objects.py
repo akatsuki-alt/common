@@ -73,3 +73,50 @@ class DBBeatmap(Base):
     
     last_db_update = Column('last_db_update', DateTime(timezone=True), default=datetime.now())
     beatmapset = relationship('DBBeatmapset', back_populates='beatmaps')
+
+class DBUser(Base):
+    
+    __tablename__ = 'users'
+    
+    id = Column('id', Integer, primary_key=True)
+    server = Column('server', String, primary_key=True)
+    username = Column('username', String)
+    username_history = Column('username_history', ARRAY(String))
+    country = Column('country', String)
+    registered_on = Column('registered', DateTime)
+    latest_activity = Column('latest_activity', DateTime)
+    banned = Column('banned', Boolean)
+
+class DBScore(Base):
+    
+    __tablename__ = 'scores'
+    
+    id = Column('id', Integer, primary_key=True)
+    user_id = Column('user_id', Integer)
+    server = Column('server', String, primary_key=True)
+    beatmap_id = Column('beatmap_id', Integer, ForeignKey('beatmaps.id'))
+    beatmap_md5 = Column('beatmap_md5', String)
+    max_combo = Column('max_combo', Integer)
+    full_combo = Column('full_combo', Boolean)
+    count_300 = Column('count_300', Integer)
+    count_100 = Column('count_100', Integer)
+    count_50 = Column('count_50', Integer)
+    count_miss = Column('count_miss', Integer)
+    count_katu = Column('count_katu', Integer)
+    count_geki = Column('count_geki', Integer)
+    accuracy = Column('accuracy', Float)
+    rank = Column('rank', String)
+    pp = Column('pp', Float)
+    score = Column('score', Integer)
+    mods = Column('mods', Integer)
+    mode = Column('mode', SmallInteger)
+    relax = Column('relax', SmallInteger)
+    completed = Column('completed', SmallInteger)
+    pinned = Column('pinned', Boolean)
+    date = Column('date', DateTime)
+    
+    hidden = Column('hidden', Boolean)
+    pp_system = Column('pp_system', String)
+    last_updated = Column('last_updated', DateTime)
+    extra_metadata = Column('extra_metadata', JSONB)
+    beatmap = relationship('DBBeatmap', backref='user_scores', lazy='selectin', join_depth=2)
