@@ -158,6 +158,22 @@ class Stats:
             d_rank=self.d_rank
         )
 
+@dataclass
+class MapPlaycount:
+    
+    user_id: int
+    server: str
+    beatmap_id: int
+    play_count: int
+    
+    def to_db(self) -> DBMapPlaycount:
+        return DBMapPlaycount(
+            user_id=self.user_id,
+            server=self.server,
+            beatmap_id=self.beatmap_id,
+            play_count=self.play_count
+        )
+
 class ServerAPI:
     
     def __init__(self, server_name, pp_system):
@@ -176,6 +192,9 @@ class ServerAPI:
     def get_user_pinned(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
         return None
 
+    def get_user_most_played(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[MapPlaycount] | None:
+        return None
+    
     def get_user_info(self, user_id: int) -> Tuple[User, List[Stats]] | None:
         return None
 

@@ -1,6 +1,8 @@
 from common.api.server_api import *
 from common.utils import try_get
 
+from typing import List
+
 import requests
 import time
 
@@ -91,6 +93,14 @@ class AkatsukiAPI(ServerAPI):
             c_rank=0, # TODO
             d_rank=0, # TODO
         )
+        
+    def _convert_most_played(self, json, user_id: int) -> MapPlaycount:
+        return MapPlaycount(
+            user_id=user_id,
+            server=self.server_name,
+            beatmap_id=json['beatmap']['beatmap_id'],
+            play_count=json['playcount']
+        )
 
     def get_user_best(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
         req = self._get(f"https://akatsuki.gg/api/v1/users/scores/best?mode={mode}&p={page}&l={min(length, 100)}&rx={relax}&id={user_id}")
@@ -115,6 +125,12 @@ class AkatsukiAPI(ServerAPI):
         if not req.ok:
             return
         return [self._convert_score(json, user_id, relax) for json in req.json()['scores']]
+    
+    def get_user_most_played(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[MapPlaycount] | None:
+        req = self._get(f"https://akatsuki.gg/api/v1/users/most_played?mode={mode}&p={page}&l={min(length, 100)}&rx={relax}&id={user_id}")
+        if not req.ok:
+            return
+        return [self._convert_most_played(json, user_id) for json in req.json()['most_played_beatmaps']]
     
     def get_user_info(self, user_id: int) -> Tuple[User, List[Stats]] | None:
         req = self._get(f"https://akatsuki.gg/api/v1/users/full?id={user_id}")
