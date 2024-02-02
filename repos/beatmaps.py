@@ -2,8 +2,9 @@ from common.database.objects import DBBeatmapset, DBBeatmap
 from common.utils import OSSAPI_GAMEMODES, download_beatmap
 from common.app import ossapi, database
 from common.logging import get_logger
-
 from ossapi import Beatmap, Beatmapset
+
+import common.servers as servers
 
 logger = get_logger("repos.beatmaps")
 
@@ -36,12 +37,11 @@ def _from_api_beatmap(beatmap: Beatmap) -> DBBeatmap:
         count_sliders=beatmap.count_sliders,
         count_spinners=beatmap.count_spinners,
     )
-    # TODO: priv server status
     dbmap.status = {
-        'bancho': beatmap.status.value,
-        'akatsuki': beatmap.status.value,
-        'titanic': -2
+        'bancho': beatmap.status.value
     }
+    for server in servers.servers:
+        dbmap.status[server.server_name] = server.get_map_status(beatmap.id)
     return dbmap
 
 def _from_api_beatmapset(beatmapset: Beatmapset) -> DBBeatmapset:
