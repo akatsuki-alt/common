@@ -2,12 +2,12 @@ from datetime import datetime, timedelta
 from typing import List
 
 from .database.objects import DBTask
+from .logging import get_logger
 from .utils import Schedule
 from .app import database
 
 import common.app as app
 import threading
-import logging
 import time
 
 class Task:
@@ -53,7 +53,7 @@ class Service:
         self.service_name = service_name
         self.daemonize = daemonize
         self.thread = threading.Thread(target=self.run, name=service_name, daemon=self.daemonize)
-        self.logger = logging.getLogger(service_name)
+        self.logger = get_logger(service_name)
 
     def run(self):
         pass
@@ -77,6 +77,7 @@ class TaskedService(Service):
                     return False
                 if task.can_run():
                     self.logger.info(f'Starting task {task.task_name}')
+                    start = datetime.now()
                     if not task.run():
                         self.logger.error(f'Failed to run task {task.task_name}!')
                     else:
@@ -87,4 +88,5 @@ class TaskedService(Service):
                                 dbtask = DBTask(name=task.task_name, last_run=datetime.now())
                                 session.add(dbtask)
                             session.commit()
+                    self.logger.info(f"Task {task.task_name} took {datetime.now() - start}.")
             time.sleep(1)

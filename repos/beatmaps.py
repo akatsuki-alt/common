@@ -3,9 +3,9 @@ from ..utils import OSSAPI_GAMEMODES, download_beatmap
 from ossapi import Beatmap, Beatmapset
 from ..app import ossapi, database
 
-import logging
+from common.logging import get_logger
 
-logger = logging.getLogger("repos.beatmaps")
+logger = get_logger("repos.beatmaps")
 
 def _get_username(user_id: int) -> str:
     if (user := ossapi.user(user_id)):

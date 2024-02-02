@@ -1,14 +1,15 @@
 from datetime import datetime, timedelta
 
+from common.logging import get_logger
+
 from .files import BinaryFile, exists
 from .app import config
 
 import requests
-import logging
 
 OSSAPI_GAMEMODES = {'osu': 0, 'taiko': 1, 'fruits': 2, 'mania': 3}
 DEFAULT_HEADERS = {"user-agent": "akatsukialt!/KompirBot fetch service"}
-logger = logging.getLogger("utils")
+logger = get_logger("utils")
 
 def download_beatmap(beatmap_id, check_MD5: str = None, force_download=False) -> bool:
     if exists(f"{config.storage}/beatmaps/{beatmap_id}.osu.gz") and not force_download:
