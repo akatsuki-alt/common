@@ -79,13 +79,50 @@ class DBUser(Base):
     __tablename__ = 'users'
     
     id = Column('id', Integer, primary_key=True)
+    clan_id = Column('clan_id', Integer)
     server = Column('server', String, primary_key=True)
     username = Column('username', String)
     username_history = Column('username_history', ARRAY(String))
     country = Column('country', String)
     registered_on = Column('registered', DateTime)
     latest_activity = Column('latest_activity', DateTime)
+    favourite_mode = Column('favourite_mode', SmallInteger)
+    followers = Column('followers', Integer)
     banned = Column('banned', Boolean)
+
+class DBStats(Base):
+
+    __tablename__ = 'stats'
+    
+    server = Column('server', String, primary_key=True)
+    user_id = Column('user_id', Integer, primary_key=True)
+    mode = Column('mode', SmallInteger, primary_key=True)
+    relax = Column('relax', SmallInteger, primary_key=True)
+    
+    ranked_score = Column('ranked_score', BigInteger)
+    total_score = Column('total_score', BigInteger)
+    play_count = Column('play_count', Integer)
+    play_time = Column('play_time', Integer)
+    replays_watched = Column('replays_watched', Integer)
+    total_hits = Column('total_hits', Integer)
+    max_combo = Column('max_combo', Integer)
+    level = Column('level', Float)
+    accuracy = Column('accuracy', Float)
+    pp = Column('pp', Float)
+
+    global_rank = Column('global_rank', Integer)
+    country_rank = Column('country_rank', Integer)
+    global_score_rank = Column('global_score_rank', Integer)
+    country_score_rank = Column('country_score_rank', Integer)
+    
+    xh_rank = Column('xh_rank', Integer)
+    x_rank = Column('x_rank', Integer)
+    sh_rank = Column('sh_rank', Integer)
+    s_rank = Column('s_rank', Integer)
+    a_rank = Column('a_rank', Integer)
+    b_rank = Column('b_rank', Integer)
+    c_rank = Column('c_rank', Integer)
+    d_rank = Column('d_rank', Integer)
 
 class DBScore(Base):
     
