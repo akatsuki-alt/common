@@ -175,3 +175,6 @@ class ServerAPI:
 
     def get_user_info(self, user_id: int) -> Tuple[User, List[Stats]] | None:
         return None
+
+    def get_map_status(self, beatmap_id: int) -> int:
+        return -2

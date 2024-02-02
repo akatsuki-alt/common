@@ -126,3 +126,9 @@ class AkatsukiAPI(ServerAPI):
             for mode in range(max_mode):
                 stats.append(self._convert_stats(json['stats'][relax][modes[mode]], user_id, mode, relax))
         return self._convert_user(json), stats
+
+    def get_map_status(self, beatmap_id: int) -> int:
+        req = self._get(f"https://akatsuki.gg/api/v1/beatmaps?b={beatmap_id}")
+        if not req.ok:
+            return -2
+        return req.json()['ranked']-1
