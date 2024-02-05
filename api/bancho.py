@@ -99,5 +99,11 @@ class BanchoAPI(ServerAPI):
     def get_user_recent(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
         return [self._convert_score(score) for score in ossapi.user_scores(user_id, mode=self._mode(mode), offset=(page-1)*length, limit=length, type=ScoreType.RECENT)]
 
+    def get_map_status(self, beatmap_id: int) -> int:
+        try:
+            return ossapi.beatmap(beatmap_id=beatmap_id).status.value
+        except ValueError:
+            return -2
+
     def get_leaderboard(self, mode: int, relax: int, page: int, length: int, inactive=False, sort: SortType = SortType.PP) -> List[Tuple[User, Stats]] | None:
         return [(self._convert_user_compact(stats.user), self._convert_stats(stats, mode)) for stats in ossapi.ranking(mode=self._mode(mode), type=RankingType.PERFORMANCE if sort == SortType.PP else RankingType.SCORE, cursor=Cursor(page=page, length=length)).ranking]
