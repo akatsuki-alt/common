@@ -1,9 +1,11 @@
 from ossapi.models import UserStatistics, BeatmapPlaycount, UserCompact, Cursor
 from ossapi import RankingType, ScoreType, GameMode, UserBeatmapType
+from ossapi.models import User as Ossapi_User
 from ossapi import Score as OssapiScore
 
 from common.api.server_api import *
 from common.app import ossapi
+
 
 from typing import List, Tuple
 
@@ -94,10 +96,24 @@ class BanchoAPI(ServerAPI):
             country = user.country_code,
             latest_activity = user.last_visit,
             followers = user.follower_count,
-            banned = user.is_restricted,
+            banned = True if user.is_restricted else False, # Null for some reason
             is_bot = user.is_bot
         )
     
+    def _convert_user(self, user: Ossapi_User) -> User:
+        return User(
+            id = user.id,
+            server = self.server_name,
+            username = user.username,
+            username_history = [user.username],
+            country = user.country_code,
+            registered_on = user.join_date,
+            latest_activity = user.last_visit,
+            followers = user.follower_count,
+            banned = True if user.is_restricted else False, # Null for some reason
+            is_bot = user.is_bot,
+        )
+        
     def get_user_best(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
         return [self._convert_score(score) for score in ossapi.user_scores(user_id, mode=self._mode(mode), offset=(page-1)*length, limit=length, type=ScoreType.BEST)]
     
@@ -109,6 +125,18 @@ class BanchoAPI(ServerAPI):
 
     def get_user_most_played(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[MapPlaycount] | None:
         return [self._convert_most_played(map, user_id) for map in ossapi.user_beatmaps(user_id, type=UserBeatmapType.MOST_PLAYED, offset=(page-1)*length, limit=length)]
+
+    def get_user_info(self, user_id: int) -> Tuple[User, List[Stats]] | None:
+        stats = []
+        mode = 0
+        for gamemode in [GameMode.OSU, GameMode.TAIKO, GameMode.CATCH, GameMode.MANIA]:
+            current_mode_profile = ossapi.user(user_id, mode=gamemode)
+            if not current_mode_profile:
+                continue
+            current_mode_profile.statistics.user = current_mode_profile
+            stats.append(self._convert_stats(current_mode_profile.statistics, mode))
+            mode += 1
+        return self._convert_user(current_mode_profile), stats
 
     def get_map_status(self, beatmap_id: int) -> int:
         try:
