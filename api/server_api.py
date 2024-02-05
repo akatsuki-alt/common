@@ -79,6 +79,7 @@ class User:
     favourite_mode: int = 0
     followers: int = 0
     banned: bool = False
+    is_bot: bool = False
     
     extra_metadata: dict = None
     
@@ -180,6 +181,10 @@ class MapPlaycount:
             play_count=self.play_count
         )
 
+class SortType(Enum):
+    PP = "pp"
+    SCORE = "score"
+    
 class ServerAPI:
     
     def __init__(self, server_name, pp_system):
@@ -206,3 +211,6 @@ class ServerAPI:
 
     def get_map_status(self, beatmap_id: int) -> int:
         return -2
+    
+    def get_leaderboard(self, mode: int, relax: int, page: int, length: int, inactive = False, sort: SortType = SortType.PP) -> List[Tuple[User, Stats]] | None:
+        return None

@@ -90,6 +90,7 @@ class DBUser(Base):
     followers = Column('followers', Integer)
     medals_unlocked = Column('medals_unlocked', Integer)
     banned = Column('banned', Boolean)
+    is_bot = Column('is_bot', Boolean)
     
     extra_metadata = Column('extra_metadata', JSONB)
 
