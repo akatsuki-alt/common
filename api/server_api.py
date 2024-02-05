@@ -106,6 +106,7 @@ class Stats:
     user_id: int = 0
     mode: int = 0
     relax: int = 0
+    date: Date = datetime.date.today()
     
     ranked_score: int = 0
     total_score: int = 0
@@ -143,6 +144,7 @@ class Stats:
             user_id=self.user_id,
             mode=self.mode,
             relax=self.relax,
+            date = self.date,
             ranked_score=self.ranked_score,
             total_score=self.total_score,
             play_count=self.play_count,

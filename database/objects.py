@@ -102,6 +102,7 @@ class DBStats(Base):
     user_id = Column('user_id', Integer, primary_key=True)
     mode = Column('mode', SmallInteger, primary_key=True)
     relax = Column('relax', SmallInteger, primary_key=True)
+    date = Column('date', Date, primary_key=True)
     
     ranked_score = Column('ranked_score', BigInteger)
     total_score = Column('total_score', BigInteger)
