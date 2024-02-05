@@ -166,5 +166,4 @@ class AkatsukiAPI(ServerAPI):
         req = self._get(f"https://akatsuki.gg/api/v1/leaderboard?mode={mode}&p={page}&l={length}&rx={relax}&sort={sort_type}")
         if not req.ok:
             return
-        print(req.url)
         return [(self._convert_user(data), self._convert_stats(data['chosen_mode'], data['id'], mode, relax)) for data in req.json()['users']]
