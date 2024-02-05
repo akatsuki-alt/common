@@ -130,6 +130,27 @@ class DBStats(Base):
 
     extra_metadata = Column('extra_metadata', JSONB)
 
+class DBStatsCompact(Base):
+
+    __tablename__ = 'live_leaderboard'
+    
+    id = Column('user_id', Integer, primary_key=True)
+    server = Column('server', String, primary_key=True)
+    leaderboard_type = Column('leaderboard_type', String, primary_key=True)
+    mode = Column('mode', SmallInteger, primary_key=True)
+    relax = Column('relax', SmallInteger, primary_key=True)
+    global_rank = Column('global_rank', Integer)
+    country_rank = Column('country_rank', Integer)
+    score = Column('score', Float) # Depends on leaderboard type
+    pp = Column('pp', Float)
+    ranked_score = Column('ranked_score', BigInteger)
+    total_score = Column('total_score', BigInteger)
+    play_count = Column('play_count', Integer)
+    replays_watched = Column('replays_watched', Integer)
+    total_hits = Column('total_hits', Integer)
+    accuracy = Column('accuracy', Float)
+    
+    
 class DBScore(Base):
     
     __tablename__ = 'scores'

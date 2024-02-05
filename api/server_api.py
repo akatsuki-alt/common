@@ -132,6 +132,9 @@ class Stats:
     c_rank: int = 0
     d_rank: int = 0 
     
+    score: float = 0.0
+    leaderboard_type: str = "pp"
+    
     extra_metadata: dict = None
     
     def to_db(self) -> DBStats:
@@ -163,6 +166,24 @@ class Stats:
             c_rank=self.c_rank,
             d_rank=self.d_rank,
             extra_metadata=self.extra_metadata
+        )        
+    def to_db_compact(self) -> DBStatsCompact:
+        return DBStatsCompact(
+            id=self.user_id,
+            server=self.server,
+            leaderboard_type=self.leaderboard_type,
+            mode=self.mode,
+            relax=self.relax,
+            global_rank=self.global_rank,
+            country_rank=self.country_rank,
+            score=self.score,
+            pp=self.pp,
+            ranked_score=self.ranked_score,
+            total_score=self.total_score,
+            play_count=self.play_count,
+            replays_watched=self.replays_watched,
+            total_hits=self.total_hits,
+            accuracy=self.accuracy
         )
 
 @dataclass
