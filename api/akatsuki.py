@@ -1,7 +1,11 @@
+from ..database.objects import Tuple
+from .server_api import SortType, Stats, User
+from ..database.objects import Tuple
+from .server_api import SortType, Stats, User
 from common.api.server_api import *
 from common.utils import try_get
 
-from typing import List
+from typing import List, Tuple
 
 import requests
 import time
@@ -154,3 +158,13 @@ class AkatsukiAPI(ServerAPI):
         if not req.ok:
             return -2
         return req.json()['ranked']-1
+    
+    def get_leaderboard(self, mode: int, relax: int, page: int, length: int, inactive=False, sort: SortType = SortType.PP) -> List[Tuple[User, Stats]] | None:
+        sort_type = sort
+        if inactive and sort_type == "pp":
+            sort_type = "magic" # Idk what this does but it works
+        req = self._get(f"https://akatsuki.gg/api/v1/leaderboard?mode={mode}&p={page}&l={length}&rx={relax}&sort={sort_type}")
+        if not req.ok:
+            return
+        print(req.url)
+        return [(self._convert_user(data), self._convert_stats(data['chosen_mode'], data['id'], mode, relax)) for data in req.json()['users']]
