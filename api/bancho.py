@@ -1,10 +1,11 @@
-from common.api.server_api import *
-from common.app import ossapi
-from typing import List
-from ossapi import ScoreType, GameMode
-
+from ossapi.models import UserStatistics, UserCompact, Cursor
+from ossapi import RankingType, ScoreType, GameMode
 from ossapi import Score as OssapiScore
 
+from common.api.server_api import *
+from common.app import ossapi
+
+from typing import List, Tuple
 
 class BanchoAPI(ServerAPI):
     
@@ -46,6 +47,49 @@ class BanchoAPI(ServerAPI):
             pp_system=self.pp_system
         )
         
+    def _convert_stats(self, stats: UserStatistics, mode: int) -> Stats:
+        return Stats(
+            server=self.server_name,
+            user_id=stats.user.id,
+            mode=mode,
+            relax=0,
+            ranked_score=stats.ranked_score,
+            total_score=stats.total_score,
+            play_count=stats.play_count,
+            play_time=stats.play_time,
+            replays_watched=stats.replays_watched_by_others,
+            total_hits=stats.total_hits,
+            max_combo=stats.maximum_combo,
+            level=stats.level.current + (stats.level.progress/100),
+            accuracy=stats.hit_accuracy,
+            pp=stats.pp,
+            global_rank=stats.global_rank,
+            country_rank=stats.country_rank, # Doesnt work on lb
+            global_score_rank=-1, # TODO: score api
+            country_score_rank=-1, # TODO: score api
+            xh_rank=stats.grade_counts.ssh,
+            x_rank=stats.grade_counts.ss,
+            sh_rank=stats.grade_counts.sh,
+            s_rank=stats.grade_counts.s,
+            a_rank=stats.grade_counts.a,
+            b_rank=-1, # TODO: use osu alt api for this
+            c_rank=-1,
+            d_rank=-1,
+        )
+    
+    def _convert_user_compact(self, user: UserCompact) -> User:
+        return User(
+            id = user.id,
+            server = self.server_name,
+            username = user.username,
+            username_history = [user.username],
+            country = user.country_code,
+            latest_activity = user.last_visit,
+            followers = user.follower_count,
+            banned = user.is_restricted,
+            is_bot = user.is_bot
+        )
+    
     def get_user_best(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
         return [self._convert_score(score) for score in ossapi.user_scores(user_id, mode=self._mode(mode), offset=(page-1)*length, limit=length, type=ScoreType.BEST)]
     
@@ -55,4 +99,5 @@ class BanchoAPI(ServerAPI):
     def get_user_recent(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
         return [self._convert_score(score) for score in ossapi.user_scores(user_id, mode=self._mode(mode), offset=(page-1)*length, limit=length, type=ScoreType.RECENT)]
 
-    
+    def get_leaderboard(self, mode: int, relax: int, page: int, length: int, inactive=False, sort: SortType = SortType.PP) -> List[Tuple[User, Stats]] | None:
+        return [(self._convert_user_compact(stats.user), self._convert_stats(stats, mode)) for stats in ossapi.ranking(mode=self._mode(mode), type=RankingType.PERFORMANCE if sort == SortType.PP else RankingType.SCORE, cursor=Cursor(page=page, length=length)).ranking]
