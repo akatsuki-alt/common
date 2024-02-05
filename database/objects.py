@@ -89,6 +89,8 @@ class DBUser(Base):
     favourite_mode = Column('favourite_mode', SmallInteger)
     followers = Column('followers', Integer)
     banned = Column('banned', Boolean)
+    
+    extra_metadata = Column('extra_metadata', JSONB)
 
 class DBStats(Base):
 

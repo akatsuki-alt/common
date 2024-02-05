@@ -80,6 +80,8 @@ class User:
     followers: int = 0
     banned: bool = False
     
+    extra_metadata: dict = None
+    
     def to_db(self) -> DBUser:
         return DBUser(
             id = self.id,
@@ -92,7 +94,8 @@ class User:
             latest_activity = self.latest_activity,
             favourite_mode = self.favourite_mode,
             followers = self.followers,
-            banned = self.banned
+            banned = self.banned,
+            extra_metadata = self.extra_metadata
         )
 
 @dataclass
