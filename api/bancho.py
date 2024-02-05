@@ -1,5 +1,5 @@
-from ossapi.models import UserStatistics, UserCompact, Cursor
-from ossapi import RankingType, ScoreType, GameMode
+from ossapi.models import UserStatistics, BeatmapPlaycount, UserCompact, Cursor
+from ossapi import RankingType, ScoreType, GameMode, UserBeatmapType
 from ossapi import Score as OssapiScore
 
 from common.api.server_api import *
@@ -76,6 +76,14 @@ class BanchoAPI(ServerAPI):
             c_rank=-1,
             d_rank=-1,
         )
+        
+    def _convert_most_played(self, json: BeatmapPlaycount, user_id: int) -> MapPlaycount:
+        return MapPlaycount(
+            user_id=user_id,
+            server=self.server_name,
+            beatmap_id=json.beatmap_id,
+            play_count=json.count
+        )
     
     def _convert_user_compact(self, user: UserCompact) -> User:
         return User(
@@ -98,6 +106,9 @@ class BanchoAPI(ServerAPI):
 
     def get_user_recent(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
         return [self._convert_score(score) for score in ossapi.user_scores(user_id, mode=self._mode(mode), offset=(page-1)*length, limit=length, type=ScoreType.RECENT)]
+
+    def get_user_most_played(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[MapPlaycount] | None:
+        return [self._convert_most_played(map, user_id) for map in ossapi.user_beatmaps(user_id, type=UserBeatmapType.MOST_PLAYED, offset=(page-1)*length, limit=length)]
 
     def get_map_status(self, beatmap_id: int) -> int:
         try:
