@@ -88,6 +88,7 @@ class DBUser(Base):
     latest_activity = Column('latest_activity', DateTime)
     favourite_mode = Column('favourite_mode', SmallInteger)
     followers = Column('followers', Integer)
+    medals_unlocked = Column('medals_unlocked', Integer)
     banned = Column('banned', Boolean)
     
     extra_metadata = Column('extra_metadata', JSONB)
