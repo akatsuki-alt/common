@@ -128,6 +128,8 @@ class Stats:
     c_rank: int = 0
     d_rank: int = 0 
     
+    extra_metadata: dict = None
+    
     def to_db(self) -> DBStats:
         return DBStats(
             server=self.server,
@@ -155,7 +157,8 @@ class Stats:
             a_rank=self.a_rank,
             b_rank=self.b_rank,
             c_rank=self.c_rank,
-            d_rank=self.d_rank
+            d_rank=self.d_rank,
+            extra_metadata=self.extra_metadata
         )
 
 @dataclass

@@ -124,6 +124,8 @@ class DBStats(Base):
     c_rank = Column('c_rank', Integer)
     d_rank = Column('d_rank', Integer)
 
+    extra_metadata = Column('extra_metadata', JSONB)
+
 class DBScore(Base):
     
     __tablename__ = 'scores'
