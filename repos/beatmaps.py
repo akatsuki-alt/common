@@ -97,3 +97,16 @@ def get_beatmapset(beatmapset_id: int, force_fetch: bool = False) -> DBBeatmapse
                 logger.exception(f"Failed to get beatmapset {beatmapset_id}")
                 return None
             
+def get_beatmap(beatmap_id: int, force_fetch: bool = False) -> DBBeatmapset | None:
+    with database.session as session:
+        if (dbmap := session.query(DBBeatmap).filter(DBBeatmap.id == beatmap_id).first()) and not force_fetch:
+            return dbmap
+        else:
+            try:
+                beatmap = ossapi.beatmap(beatmap_id)
+                if get_beatmapset(beatmap.beatmapset_id, force_fetch=force_fetch):
+                    session.commit()
+                    return session.get(DBBeatmap, (beatmap_id))
+            except:
+                logger.exception(f"Failed to get beatmap {beatmap_id}")
+                return None
