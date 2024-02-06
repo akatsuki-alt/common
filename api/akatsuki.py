@@ -68,9 +68,16 @@ class AkatsukiAPI(ServerAPI):
             followers = try_get(json, 'followers', 0)
         )
 
-    def _convert_stats(self, json: dict, user_id: int, mode: int, relax: int) -> Stats: 
+    def _convert_stats(self, json: dict, user_id: int, mode: int, relax: int, leaderboard_type = "pp") -> Stats: 
+        score = 0
+        if leaderboard_type == "pp":
+            score=json['pp']
+        elif leaderboard_type == "score":
+            score=json['ranked_score']
         return Stats(
             server=self.server_name,
+            leaderboard_type=leaderboard_type,
+            score=score,
             user_id=user_id,
             mode=mode,
             relax=relax,
@@ -170,4 +177,4 @@ class AkatsukiAPI(ServerAPI):
         users = req.json()['users']
         if not users:
             return
-        return [(self._convert_user(data), self._convert_stats(data['chosen_mode'], data['id'], mode, relax)) for data in users]
+        return [(self._convert_user(data), self._convert_stats(data['chosen_mode'], data['id'], mode, relax, sort)) for data in users]

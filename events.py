@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Type, Callable
 
 class EventHandler:
@@ -22,3 +23,8 @@ class EventHandler:
             return
         for handler in self.handlers[type(event)]:
             handler(event)
+
+@dataclass
+class LeaderboardUpdateEvent:
+    server: str
+
