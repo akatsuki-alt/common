@@ -78,7 +78,12 @@ class TaskedService(Service):
                 if task.can_run():
                     self.logger.info(f'Starting task {task.task_name}')
                     start = datetime.now()
-                    if not task.run():
+                    try:
+                        result = task.run()
+                    except:
+                        self.logger.error(f"Unhandled exception in task {task.task_name}!", exc_info=True)
+                        result = False
+                    if not result:
                         self.logger.error(f'Failed to run task {task.task_name}!')
                     else:
                         with database.session as session:
