@@ -5,6 +5,7 @@ from common.logging import get_logger
 from ossapi import Beatmap, Beatmapset
 
 import common.servers as servers
+import time
 
 logger = get_logger("repos.beatmaps")
 
@@ -92,6 +93,7 @@ def get_beatmapset(beatmapset_id: int, force_fetch: bool = False) -> DBBeatmapse
                 for beatmap in beatmapset.beatmaps:
                     session.merge(_from_api_beatmap(beatmap))
                 session.commit()
+                time.sleep(0.4)
                 return dbset
             except:
                 logger.exception(f"Failed to get beatmapset {beatmapset_id}")
