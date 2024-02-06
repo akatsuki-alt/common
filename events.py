@@ -1,3 +1,4 @@
+from common.api.server_api import User
 from dataclasses import dataclass
 from typing import Type, Callable
 
@@ -28,3 +29,9 @@ class EventHandler:
 class LeaderboardUpdateEvent:
     server: str
 
+@dataclass
+class NewUserDiscoveredEvent:
+    user: User
+    
+    def __repr__(self) -> str:
+        return f"New user discovered!\nServer: {self.user.server}\nUsername: {self.user.username}"
