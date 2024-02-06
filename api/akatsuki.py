@@ -13,7 +13,7 @@ import time
 class AkatsukiAPI(ServerAPI):
     
     def __init__(self):
-        super().__init__("akatsuki", "akatsuki-pp-rs_0.9.6")
+        super().__init__("akatsuki", "akatsuki-pp-rs_0.9.6", supports_rx=true)
         self._last_response = time.time()
     
     def _get(self, url) -> requests.Response:

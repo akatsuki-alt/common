@@ -207,12 +207,13 @@ class MapPlaycount:
 class SortType(Enum):
     PP = "pp"
     SCORE = "score"
-    
+
+@dataclass    
 class ServerAPI:
     
-    def __init__(self, server_name, pp_system):
-        self.server_name = server_name
-        self.pp_system = pp_system
+    server_name: str = None
+    pp_system: str = None
+    supports_rx: bool = False
 
     def get_user_best(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
         return None
