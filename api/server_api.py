@@ -78,6 +78,7 @@ class User:
     latest_activity: datetime = None
     favourite_mode: int = 0
     followers: int = 0
+    medals_unlocked: int = 0
     banned: bool = False
     is_bot: bool = False
     
@@ -95,7 +96,9 @@ class User:
             latest_activity = self.latest_activity,
             favourite_mode = self.favourite_mode,
             followers = self.followers,
+            medals_unlocked = self.medals_unlocked,
             banned = self.banned,
+            is_bot = self.is_bot,
             extra_metadata = self.extra_metadata
         )
 

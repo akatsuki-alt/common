@@ -28,6 +28,10 @@ class EventHandler:
 @dataclass
 class LeaderboardUpdateEvent:
     server: str
+    users_updated: int
+
+    def __repr__(self) -> str:
+        return f"Updated leaderboard for server {self.server}! (Total users updated: {self.users_updated})"
 
 @dataclass
 class NewUserDiscoveredEvent:

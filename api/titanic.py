@@ -1,8 +1,4 @@
-from ..database.objects import Tuple
-from .server_api import Stats, User
-from .server_api import Score
 from common.api.server_api import *
-from common.utils import try_get, OSSAPI_GAMEMODES
 
 from typing import List, Tuple
 
@@ -40,9 +36,16 @@ class TitanicAPI(ServerAPI):
             extra_metadata={'groups': [group['group_id'] for group in json['groups']]}
         )
 
-    def _convert_stats(self, json: dict, user_id: int) -> Stats:
+    def _convert_stats(self, json: dict, user_id: int, leaderboard_type="pp") -> Stats:
+        score = 0
+        if leaderboard_type == "pp":
+            score=json['pp']
+        elif leaderboard_type == "score":
+            score=json['ranked_score']
         return Stats(
             server=self.server_name,
+            leaderboard_type=leaderboard_type,
+            score=score,
             user_id=user_id,
             mode=json['mode'],
             relax=0,
@@ -154,3 +157,14 @@ class TitanicAPI(ServerAPI):
             return None, None
         data = req.json()
         return self._convert_user(data), [self._convert_stats(stats, user_id) for stats in data['stats']]
+    
+    def get_leaderboard(self, mode: int, relax: int, page: int, length: int, inactive=False, sort: SortType = SortType.PP) -> List[Tuple[User, Stats]] | None:
+        length = min(length, 50)
+        sort_type = "performance"
+        mode_str = ['osu', 'taiko', 'fruits', 'mania'][mode]
+        if sort == SortType.SCORE:
+            sort_type = "rscore"
+        req = self._get(f"https://osu.lekuru.xyz/api/rankings/{sort_type}/{mode_str}?limit=50&offset={length*(page-1)}")
+        if not req.ok:
+            return None
+        return [(self._convert_user(json['user']), self._convert_stats(json['user']['stats'][mode], json['user']['id'], sort)) for json in req.json()]
