@@ -11,16 +11,18 @@ OSSAPI_GAMEMODES = {'osu': 0, 'taiko': 1, 'fruits': 2, 'mania': 3}
 DEFAULT_HEADERS = {"user-agent": "akatsukialt!/KompirBot fetch service"}
 logger = get_logger("utils")
 
-def download_beatmap(beatmap_id, check_MD5: str = None, force_download=False) -> bool:
+def download_beatmap(beatmap_id, check_MD5: str = None, force_download=False, skip_mirror=False) -> bool:
     if exists(f"{config.storage}/beatmaps/{beatmap_id}.osu.gz") and not force_download:
         if check_MD5:
             local_MD5 = BinaryFile(f"{config.storage}/beatmaps/{beatmap_id}.osu.gz").get_hash()
             if local_MD5 != check_MD5:
                 logger.warning(f"Found mismatch in MD5 for beatmap {beatmap_id} (local: {local_MD5}, remote: {check_MD5})")
-                return download_beatmap(beatmap_id, force_download=True)
+                return download_beatmap(beatmap_id, force_download=True, skip_mirror=True)
         return True
-    if result := _osudirect_download(beatmap_id):
-        return result
+
+    if not skip_mirror:
+        if result := _osudirect_download(beatmap_id):
+            return result
 
     # Use old.ppy.sh as backup endpoint
     return _ppy_download(beatmap_id)
