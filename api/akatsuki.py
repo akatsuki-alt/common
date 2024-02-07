@@ -1,7 +1,3 @@
-from ..database.objects import Tuple
-from .server_api import SortType, Stats, User
-from ..database.objects import Tuple
-from .server_api import SortType, Stats, User
 from common.api.server_api import *
 from common.utils import try_get
 
