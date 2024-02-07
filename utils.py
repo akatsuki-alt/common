@@ -22,7 +22,11 @@ def download_beatmap(beatmap_id, check_MD5: str = None, force_download=False, sk
 
     if not skip_mirror:
         if result := _osudirect_download(beatmap_id):
-            return result
+            local_MD5 = BinaryFile(f"{config.storage}/beatmaps/{beatmap_id}.osu.gz").get_hash()
+            if check_MD5 and local_MD5 != check_MD5:
+                logger.warning(f"Mirror likely have outdated beatmap for {beatmap_id} (local: {local_MD5}, remote: {check_MD5})")
+            else:
+                return result
 
     # Use old.ppy.sh as backup endpoint
     return _ppy_download(beatmap_id)
