@@ -56,7 +56,7 @@ def _ppy_download(beatmap_id) -> bool:
         logger.warning(f"GET {response.url} {response.status_code}")
         logger.warning(f"{response.text}")
         return False
-    logger.info(f"GET {response.url} {response.status_code}")
+    #logger.info(f"GET {response.url} {response.status_code}")
     file = BinaryFile(f"{config.storage}/beatmaps/{beatmap_id}.osu.gz")
     file.data = response.content
     file.save_data()
