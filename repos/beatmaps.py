@@ -10,10 +10,12 @@ import time
 logger = get_logger("repos.beatmaps")
 
 def _get_username(user_id: int) -> str:
-    if (user := ossapi.user(user_id)):
-        return user.username
-    else:
-        return None
+    try:
+        if (user := ossapi.user(user_id)):
+            return user.username
+    except ValueError:
+        pass
+    return None
 
 def _from_api_beatmap(beatmap: Beatmap) -> DBBeatmap:
     if not download_beatmap(beatmap.id, check_MD5=beatmap.checksum):
