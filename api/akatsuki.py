@@ -113,31 +113,46 @@ class AkatsukiAPI(ServerAPI):
         req = self._get(f"https://akatsuki.gg/api/v1/users/scores/best?mode={mode}&p={page}&l={min(length, 100)}&rx={relax}&id={user_id}")
         if not req.ok:
             return
-        return [self._convert_score(json, user_id, relax) for json in req.json()['scores']]
+        scores = req.json()['scores']
+        if not scores:
+            return
+        return [self._convert_score(json, user_id, relax) for json in scores]
 
-    def get_user_1s(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
+    def get_user_1s(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score]:
         req = self._get(f"https://akatsuki.gg/api/v1/users/scores/first?mode={mode}&p={page}&l={min(length, 100)}&rx={relax}&id={user_id}")
         if not req.ok:
-            return
-        return [self._convert_score(json, user_id, relax) for json in req.json()['scores']]
+            return []
+        scores = req.json()['scores']
+        if not scores:
+            return []
+        return [self._convert_score(json, user_id, relax) for json in scores]
     
-    def get_user_recent(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
+    def get_user_recent(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score]:
         req = self._get(f"https://akatsuki.gg/api/v1/users/scores/recent?mode={mode}&p={page}&l={min(length, 100)}&rx={relax}&id={user_id}")
         if not req.ok:
-            return
-        return [self._convert_score(json, user_id, relax) for json in req.json()['scores']]
+            return []
+        scores = req.json()['scores']
+        if not scores:
+            return []
+        return [self._convert_score(json, user_id, relax) for json in scores]
     
-    def get_user_pinned(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
+    def get_user_pinned(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score]:
         req = self._get(f"https://akatsuki.gg/api/v1/users/scores/pinned?mode={mode}&p={page}&l={min(length, 100)}&rx={relax}&id={user_id}")
         if not req.ok:
-            return
-        return [self._convert_score(json, user_id, relax) for json in req.json()['scores']]
+            return []
+        scores = req.json()['scores']
+        if not scores:
+            return []
+        return [self._convert_score(json, user_id, relax) for json in scores]
     
-    def get_user_most_played(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[MapPlaycount] | None:
+    def get_user_most_played(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[MapPlaycount]:
         req = self._get(f"https://akatsuki.gg/api/v1/users/most_played?mode={mode}&p={page}&l={min(length, 100)}&rx={relax}&id={user_id}")
         if not req.ok:
-            return
-        return [self._convert_most_played(json, user_id) for json in req.json()['most_played_beatmaps']]
+            return []
+        most_played = req.json()['most_played_beatmaps']
+        if not most_played:
+            return []
+        return [self._convert_most_played(json, user_id) for json in most_played]
     
     def get_user_info(self, user_id: int) -> Tuple[User, List[Stats]] | None:
         req = self._get(f"https://akatsuki.gg/api/v1/users/full?id={user_id}")

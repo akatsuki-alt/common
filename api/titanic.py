@@ -111,45 +111,58 @@ class TitanicAPI(ServerAPI):
             play_count=json['count']
         )
 
-    def get_user_best(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 50) -> List[Score] | None:
+    def get_user_best(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 50) -> List[Score]:
         length = min(length, 50)
         mode = ['osu', 'taiko', 'fruits', 'mania'][mode]
         req = self._get(f"https://osu.lekuru.xyz/api/profile/{user_id}/top/{mode}?limit={length}&offset={length*(page-1)}")
-        if not req.ok:
-            return None
-        return [self._convert_score(json, user_id, relax) for json in req.json()]
+        scores = req.json()
+        if not scores:
+            return []
+        return [self._convert_score(json, user_id, relax) for json in scores]
 
-    def get_user_first(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 50) -> List[Score] | None:
+    def get_user_first(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 50) -> List[Score]:
         length = min(length, 50)
         mode = ['osu', 'taiko', 'fruits', 'mania'][mode]
         req = self._get(f"https://osu.lekuru.xyz/api/profile/{user_id}/first/{mode}?limit={length}&offset={length*(page-1)}")
         if not req.ok:
-            return None
-        return [self._convert_score(json, user_id, relax) for json in req.json()]
+            return []
+        scores = req.json()
+        if not scores:
+            return []
+        return [self._convert_score(json, user_id, relax) for json in scores]
 
-    def get_user_recent(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 50) -> List[Score] | None:
+    def get_user_recent(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 50) -> List[Score]:
         length = min(length, 50)
         mode = ['osu', 'taiko', 'fruits', 'mania'][mode]
         req = self._get(f"https://osu.lekuru.xyz/api/profile/{user_id}/recent/{mode}?limit={length}&offset={length*(page-1)}")
         if not req.ok:
-            return None
-        return [self._convert_score(json, user_id, relax) for json in req.json()]
+            return []
+        scores = req.json()
+        if not scores:
+            return []
+        return [self._convert_score(json, user_id, relax) for json in scores]
 
-    def get_user_pinned(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 50) -> List[Score] | None:
+    def get_user_pinned(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 50) -> List[Score]:
         length = min(length, 50)
         mode = ['osu', 'taiko', 'fruits', 'mania'][mode]
         req = self._get(f"https://osu.lekuru.xyz/api/profile/{user_id}/pinned/{mode}?limit={length}&offset={length*(page-1)}")
         if not req.ok:
-            return None
-        return [self._convert_score(json, user_id, relax) for json in req.json()]
+            return []
+        scores = req.json()
+        if not scores:
+            return []
+        return [self._convert_score(json, user_id, relax) for json in scores]
 
-    def get_user_most_played(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[MapPlaycount] | None:
+    def get_user_most_played(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[MapPlaycount]:
         length = min(length, 50)
         #mode = ['osu', 'taiko', 'fruits', 'mania'][mode]
         req = self._get(f"https://osu.lekuru.xyz/api/profile/{user_id}/plays?limit={length}&offset={length*(page-1)}")
         if not req.ok:
-            return None
-        return [self._convert_most_played(json, user_id) for json in req.json()]
+            return []
+        most_played = req.json()
+        if not most_played:
+            return []
+        return [self._convert_most_played(json, user_id) for json in most_played]
 
     def get_user_info(self, user_id: int) -> Tuple[User, List[Stats]] | None:
         req = self._get(f"https://osu.lekuru.xyz/api/profile/{user_id}")
