@@ -204,3 +204,15 @@ class DBUserQueue(Base):
     mode = Column('mode', SmallInteger, primary_key=True)
     relax = Column('relax', SmallInteger, primary_key=True)
     date = Column('date', Date, primary_key=True)
+
+class DBBeatmapPack(Base):
+    
+    __tablename__ = "beatmap_packs"
+    
+    author = Column('author', String)
+    date = Column('date', DateTime)
+    name = Column('name', String)
+    link = Column('download_link', String)
+    tag = Column('tag', String, primary_key=True)
+    no_diff_reduction = Column('no_diff_reduction', Boolean)
+    beatmapsets = Column('beatmapsets_id', ARRAY(Integer))
