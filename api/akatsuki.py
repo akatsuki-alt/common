@@ -189,3 +189,6 @@ class AkatsukiAPI(ServerAPI):
         if not users:
             return
         return [(self._convert_user(data), self._convert_stats(data['chosen_mode'], data['id'], mode, relax, sort)) for data in users]
+    
+    def ping_server(self) -> bool:
+        return self._get(f"https://akatsuki.gg/api/v1/ping").ok

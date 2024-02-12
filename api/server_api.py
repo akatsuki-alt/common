@@ -241,3 +241,6 @@ class ServerAPI:
     
     def get_leaderboard(self, mode: int, relax: int, page: int, length: int, inactive = False, sort: SortType = SortType.PP) -> List[Tuple[User, Stats]] | None:
         return None
+    
+    def ping_server(self) -> bool:
+        return False

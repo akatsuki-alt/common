@@ -181,3 +181,6 @@ class TitanicAPI(ServerAPI):
         if not req.ok:
             return None
         return [(self._convert_user(json['user']), self._convert_stats(json['user']['stats'][mode], json['user']['id'], sort)) for json in req.json()]
+    
+    def ping_server(self) -> bool:
+        return self._get(f"https://osu.lekuru.xyz/").ok
