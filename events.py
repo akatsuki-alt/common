@@ -39,3 +39,13 @@ class NewUserDiscoveredEvent:
     
     def __repr__(self) -> str:
         return f"New user discovered!\nServer: {self.user.server}\nUsername: {self.user.username}"
+
+@dataclass
+class BannedUserEvent:
+    user_id: int
+    server: str
+    user: User | None
+    
+    def __repr__(self) -> str:
+        username = self.user.username if self.user else "No username recorded."
+        return f"New banned user discovered! {username} ({self.user_id}, {self.server})"
