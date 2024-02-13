@@ -1,4 +1,6 @@
+from titanic_pp_py import Beatmap as Beatmap_titanic, Calculator as Calculator_titanic
 from akatsuki_pp_py import Beatmap as Beatmap_akat, Calculator as Calculator_akat
+from rosu_pp_py import Beatmap as Beatmap_rosu, Calculator as Calculator_rosu
 
 from common.repos.beatmaps import get_beatmap_file
 from common.database.objects import DBScore
@@ -6,6 +8,7 @@ from common.api.server_api import Score
 from common.logging import get_logger
 
 from dataclasses import dataclass
+from typing import Dict, Type
 
 logger = get_logger("performance")
 
@@ -36,19 +39,22 @@ class PerformanceSystem:
     
     def simulate(self, score: SimulatedScore) -> float:
         return 0.0
+
+
+class RosuForkPerformanceSystem(PerformanceSystem):
     
-class AkatsukiPerformanceSystem(PerformanceSystem):
-    
-    def __init__(self):
-        super().__init__("akatsuki-pp-rs_0.9.6")
+    def __init__(self, name: str, beatmap_class: Type, calculator_class: Type):
+        self.beatmap_class = beatmap_class
+        self.calculator_class = calculator_class
+        super().__init__(name)
     
     def calculate_db_score(self, score: DBScore, as_fc=False) -> float:
         try:
             beatmap = get_beatmap_file(score.beatmap_id)
             if beatmap is None:
                 return 0.0
-            map = Beatmap_akat(bytes=beatmap)
-            calc = Calculator_akat(
+            map = self.beatmap_class(bytes=beatmap)
+            calc = self.calculator_class(
                 mode = score.mode,
                 mods = score.mods,
                 n300 = score.count_300,
@@ -76,8 +82,8 @@ class AkatsukiPerformanceSystem(PerformanceSystem):
             beatmap = get_beatmap_file(score.beatmap_id)
             if beatmap is None:
                 return 0.0
-            map = Beatmap_akat(bytes=beatmap)
-            calc = Calculator_akat(mode = score.mode)
+            map = self.beatmap_class(bytes=beatmap)
+            calc = self.calculator_class(mode = score.mode)
             for key in score.__dict__.keys():
                 match key:
                     case "mods":
@@ -101,3 +107,10 @@ class AkatsukiPerformanceSystem(PerformanceSystem):
             return calc.performance(map).pp
         except:
             logger.error(f"Failed to calculate performance for score {score.id} (BeatmapID: {score.beatmap_id})", exc_info=True)
+
+
+performance_systems: Dict[str, PerformanceSystem] = {
+    'akatsuki': RosuForkPerformanceSystem('akatsuki-pp-rs_0.9.6', Beatmap_akat, Calculator_akat),
+    'bancho':   RosuForkPerformanceSystem('rosu-pp-rs_0.10.0', Beatmap_rosu, Calculator_rosu),
+    'titanic':  RosuForkPerformanceSystem('titanic-pp-rs_0.0.5', Beatmap_titanic, Calculator_titanic),
+}
