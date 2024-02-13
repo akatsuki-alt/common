@@ -6,7 +6,7 @@ from common.api.server_api import ServerAPI
 
 from typing import List
 
-servers = [AkatsukiAPI(), BanchoAPI(), TitanicAPI()]
+servers: List[ServerAPI] = [AkatsukiAPI(), BanchoAPI(), TitanicAPI()]
 
 def by_name(name: str) -> ServerAPI | None:
     for server in servers:
