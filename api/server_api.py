@@ -215,8 +215,10 @@ class SortType(Enum):
 class ServerAPI:
     
     server_name: str = None
-    pp_system: str = None
     supports_rx: bool = False
+
+    def get_pp_system(self, mode: int, relax: int) -> str:
+        return
 
     def get_user_best(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] :
         return None

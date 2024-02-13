@@ -1,3 +1,4 @@
+from common.performance import performance_systems
 from common.api.server_api import *
 from common.utils import try_get
 
@@ -9,7 +10,7 @@ import time
 class AkatsukiAPI(ServerAPI):
     
     def __init__(self):
-        super().__init__("akatsuki", "akatsuki-pp-rs_0.9.6", supports_rx=true)
+        super().__init__("akatsuki", supports_rx=true)
         self._last_response = time.time()
     
     def _get(self, url) -> requests.Response:
@@ -45,7 +46,7 @@ class AkatsukiAPI(ServerAPI):
             completed=json['completed'],
             date=datetime.datetime.fromisoformat(json['time']),
             pinned=json['pinned'],
-            pp_system=self.pp_system
+            pp_system=self.get_pp_system(json['play_mode'], relax),
         )
 
 
@@ -108,6 +109,12 @@ class AkatsukiAPI(ServerAPI):
             beatmap_id=json['beatmap']['beatmap_id'],
             play_count=json['playcount']
         )
+
+    def get_pp_system(self, mode: int, relax: int) -> str:
+        if relax > 0:
+            return performance_systems['akatsuki'].name
+        else:
+            return performance_systems['bancho'].name
 
     def get_user_best(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
         req = self._get(f"https://akatsuki.gg/api/v1/users/scores/best?mode={mode}&p={page}&l={min(length, 100)}&rx={relax}&id={user_id}")

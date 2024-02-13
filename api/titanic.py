@@ -1,3 +1,4 @@
+from common.performance import performance_systems
 from common.api.server_api import *
 
 from typing import List, Tuple
@@ -10,7 +11,7 @@ DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 class TitanicAPI(ServerAPI):
     
     def __init__(self):
-        super().__init__("titanic", "titanic-pp-rs_0.0.5")
+        super().__init__("titanic")
         self._last_response = time.time()
     
     def _get(self, url) -> requests.Response:
@@ -99,7 +100,7 @@ class TitanicAPI(ServerAPI):
             completed=json['status'],
             pinned=json['pinned'],
             date=datetime.datetime.strptime(json['submitted_at'], DATE_FORMAT),
-            pp_system=self.pp_system,
+            pp_system=self.get_pp_system(json['mode'], relax),
             extra_metadata=None
         )
         
@@ -110,6 +111,9 @@ class TitanicAPI(ServerAPI):
             beatmap_id=json['beatmap']['id'],
             play_count=json['count']
         )
+
+    def get_pp_system(self, mode: int, relax: int) -> str:
+        return performance_systems['titanic'].name
 
     def get_user_best(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 50) -> List[Score]:
         length = min(length, 50)

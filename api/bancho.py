@@ -3,6 +3,7 @@ from ossapi import RankingType, ScoreType, GameMode, UserBeatmapType
 from ossapi.models import User as Ossapi_User
 from ossapi import Score as OssapiScore
 
+from common.performance import performance_systems
 from common.api.server_api import *
 from common.app import ossapi
 
@@ -12,7 +13,7 @@ from typing import List, Tuple
 class BanchoAPI(ServerAPI):
     
     def __init__(self):
-        super().__init__("bancho", "bancho-2022")
+        super().__init__("bancho")
   
     def _mode(self, mode: int):
         return [GameMode.OSU, GameMode.TAIKO, GameMode.CATCH, GameMode.MANIA][mode]
@@ -46,7 +47,7 @@ class BanchoAPI(ServerAPI):
             completed = 1 if not score.passed else 3, # ??
             pinned=score.current_user_attributes['pin'] is not None,
             date=score.created_at,
-            pp_system=self.pp_system
+            pp_system=self.get_pp_system(score.mode_int, 0),
         )
         
     def _convert_stats(self, stats: UserStatistics, mode: int) -> Stats:
@@ -113,7 +114,10 @@ class BanchoAPI(ServerAPI):
             banned = True if user.is_restricted else False, # Null for some reason
             is_bot = user.is_bot,
         )
-        
+    
+    def get_pp_system(self, mode: int, relax: int) -> str:
+        return performance_systems['bancho'].name
+
     def get_user_best(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
         return [self._convert_score(score) for score in ossapi.user_scores(user_id, mode=self._mode(mode), offset=(page-1)*length, limit=length, type=ScoreType.BEST)]
     
