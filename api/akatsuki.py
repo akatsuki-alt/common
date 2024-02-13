@@ -109,6 +109,15 @@ class AkatsukiAPI(ServerAPI):
             beatmap_id=json['beatmap']['beatmap_id'],
             play_count=json['playcount']
         )
+        
+    def _lookup_user(self, username: str) -> int:
+        req = self._get(f"https://akatsuki.gg/api/v1/users/lookup?username={username}")
+        if not req.ok:
+            return 0
+        for lookup in req.json()['users']:
+            if lookup['username'].lower() == username.lower():
+                return lookup['id']
+        return 0
 
     def get_pp_system(self, mode: int, relax: int) -> str:
         if relax > 0:
@@ -161,7 +170,11 @@ class AkatsukiAPI(ServerAPI):
             return []
         return [self._convert_most_played(json, user_id) for json in most_played]
     
-    def get_user_info(self, user_id: int) -> Tuple[User, List[Stats]] | None:
+    def get_user_info(self, user_id: int | str) -> Tuple[User, List[Stats]] | None:
+        if type(user_id) == str:
+            user_id = self._lookup_user(user_id)
+            if not user_id:
+                return None, None
         req = self._get(f"https://akatsuki.gg/api/v1/users/full?id={user_id}")
         if not req.ok:
             return None, None

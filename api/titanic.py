@@ -168,7 +168,7 @@ class TitanicAPI(ServerAPI):
             return []
         return [self._convert_most_played(json, user_id) for json in most_played]
 
-    def get_user_info(self, user_id: int) -> Tuple[User, List[Stats]] | None:
+    def get_user_info(self, user_id: int | str) -> Tuple[User, List[Stats]] | None:
         req = self._get(f"https://osu.lekuru.xyz/api/profile/{user_id}")
         if not req.ok:
             return None, None
