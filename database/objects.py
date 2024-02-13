@@ -216,3 +216,14 @@ class DBBeatmapPack(Base):
     tag = Column('tag', String, primary_key=True)
     no_diff_reduction = Column('no_diff_reduction', Boolean)
     beatmapsets = Column('beatmapsets_id', ARRAY(Integer))
+
+class DBBotLink(Base):
+    
+    __tablename__ = "bot_links"
+    
+    discord_id = Column('discord_id', BigInteger, primary_key=True)
+    default_server = Column('default_server', String)
+    default_mode = Column('default_mode', SmallInteger)
+    default_relax = Column('default_relax', SmallInteger)
+    links = Column('servers', JSONB)
+    preferences = Column('preferences', JSONB)
