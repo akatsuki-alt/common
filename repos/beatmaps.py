@@ -1,6 +1,7 @@
 from common.utils import OSSAPI_GAMEMODES, download_beatmap, _try_multiple
 from common.database.objects import DBBeatmapset, DBBeatmap
-from common.app import ossapi, database
+from common.app import ossapi, database, config
+from common.files import BinaryFile, exists
 from common.logging import get_logger
 from ossapi import Beatmap, Beatmapset
 
@@ -101,7 +102,7 @@ def get_beatmapset(beatmapset_id: int, force_fetch: bool = False) -> DBBeatmapse
                 logger.exception(f"Failed to get beatmapset {beatmapset_id}")
                 return None
             
-def get_beatmap(beatmap_id: int, force_fetch: bool = False) -> DBBeatmapset | None:
+def get_beatmap(beatmap_id: int, force_fetch: bool = False) -> DBBeatmap | None:
     with database.session as session:
         if (dbmap := session.query(DBBeatmap).filter(DBBeatmap.id == beatmap_id).first()) and not force_fetch:
             return dbmap
@@ -114,3 +115,12 @@ def get_beatmap(beatmap_id: int, force_fetch: bool = False) -> DBBeatmapset | No
             except:
                 logger.exception(f"Failed to get beatmap {beatmap_id}")
                 return None
+            
+def get_beatmap_file(beatmap_id: int) -> bytes:
+    if not get_beatmap(beatmap_id):
+        return None
+    file = BinaryFile(f"{config.storage}/beatmaps/{beatmap_id}.osu.gz")
+    if not file.exists():
+        return
+    file.load_data()
+    return file.data
