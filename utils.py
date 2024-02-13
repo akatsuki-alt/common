@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Optional
 
 from common.logging import get_logger
 
@@ -6,6 +7,7 @@ from common.files import BinaryFile, exists
 from common.app import config
 
 import requests
+import time
 
 OSSAPI_GAMEMODES = {'osu': 0, 'taiko': 1, 'fruits': 2, 'mania': 3}
 DEFAULT_HEADERS = {"user-agent": "akatsukialt!/KompirBot fetch service"}
@@ -67,6 +69,20 @@ def try_get(dikt: dict, key: str, default=None):
         return dikt[key]
     except KeyError:
         return default
+
+def _try_multiple(func, args, _retries=3, _delay=1) -> Optional[object]:
+    tries = 0
+    while tries < _retries:
+        try:
+            if type(args) == dict:
+                return func(**args)
+            else:
+                return func(args)
+        except Exception as e:
+            logger.exception(f"Failed to get {func.__name__} {args} ({e})")
+            tries += 1
+            time.sleep(_delay)
+    return None
 
 class Schedule:
     

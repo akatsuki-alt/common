@@ -1,5 +1,5 @@
+from common.utils import OSSAPI_GAMEMODES, download_beatmap, _try_multiple
 from common.database.objects import DBBeatmapset, DBBeatmap
-from common.utils import OSSAPI_GAMEMODES, download_beatmap
 from common.app import ossapi, database
 from common.logging import get_logger
 from ossapi import Beatmap, Beatmapset
@@ -89,7 +89,7 @@ def get_beatmapset(beatmapset_id: int, force_fetch: bool = False) -> DBBeatmapse
             return dbset
         else:
             try:
-                beatmapset = ossapi.beatmapset(beatmapset_id)
+                beatmapset = _try_multiple(ossapi.beatmapset, beatmapset_id)
                 dbset = _from_api_beatmapset(beatmapset)
                 session.merge(dbset)
                 for beatmap in beatmapset.beatmaps:
@@ -107,7 +107,7 @@ def get_beatmap(beatmap_id: int, force_fetch: bool = False) -> DBBeatmapset | No
             return dbmap
         else:
             try:
-                beatmap = ossapi.beatmap(beatmap_id)
+                beatmap = _try_multiple(ossapi.beatmap, beatmap_id)
                 if get_beatmapset(beatmap.beatmapset_id, force_fetch=force_fetch):
                     session.commit()
                     return session.get(DBBeatmap, (beatmap_id))
