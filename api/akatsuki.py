@@ -111,7 +111,7 @@ class AkatsukiAPI(ServerAPI):
         )
         
     def _lookup_user(self, username: str) -> int:
-        req = self._get(f"https://akatsuki.gg/api/v1/users/lookup?username={username}")
+        req = self._get(f"https://akatsuki.gg/api/v1/users/lookup?name={username}")
         if not req.ok:
             return 0
         for lookup in req.json()['users']:
