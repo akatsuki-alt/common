@@ -3,7 +3,7 @@ from ossapi import RankingType, ScoreType, GameMode, UserBeatmapType
 from ossapi.models import User as Ossapi_User
 from ossapi import Score as OssapiScore
 
-from common.performance import performance_systems
+from common.performance import performance_systems, SimulatedScore
 from common.api.server_api import *
 from common.app import ossapi
 
@@ -18,11 +18,27 @@ class BanchoAPI(ServerAPI):
     def _mode(self, mode: int):
         return [GameMode.OSU, GameMode.TAIKO, GameMode.CATCH, GameMode.MANIA][mode]
       
-    def _convert_score(self, score: OssapiScore) -> Score:
+    def _convert_score(self, score: OssapiScore, recalc_pp: bool = False) -> Score:
         if score.weight:
             pp = score.weight.pp * 100/score.weight.percentage # Dear god
-        else:
+        elif score.id != 0:
             pp = ossapi.score(mode=score.mode, score_id=score.id).pp
+        elif recalc_pp:
+            pp = performance_systems['bancho'].simulate(SimulatedScore(
+                beatmap_id = score.beatmap.id,
+                mods = score.mods.value,
+                max_combo = score.max_combo,
+                n300 = score.statistics.count_300,
+                n100 = score.statistics.count_100,
+                n50 = score.statistics.count_50,
+                nMiss = score.statistics.count_miss,
+                nGeki = score.statistics.count_geki,
+                nKatu = score.statistics.count_katu,
+                mode = score.mode_int,
+                passed_objects = score.statistics.count_300 + score.statistics.count_100 + score.statistics.count_50 + score.statistics.count_miss
+            ))
+        else:
+            pp = 0
         return Score(
             id = score.id,
             user_id = score.user().id,
@@ -125,7 +141,8 @@ class BanchoAPI(ServerAPI):
         return [self._convert_score(score) for score in ossapi.user_scores(user_id, mode=self._mode(mode), offset=(page-1)*length, limit=length, type=ScoreType.FIRSTS)]
 
     def get_user_recent(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
-        return [self._convert_score(score) for score in ossapi.user_scores(user_id, mode=self._mode(mode), offset=(page-1)*length, limit=length, type=ScoreType.RECENT)]
+        scores = ossapi.user_scores(user_id, mode=self._mode(mode), offset=(page-1)*length, limit=length, type=ScoreType.RECENT)
+        return [self._convert_score(scores[0])] + [self._convert_score(score, recalc_pp=False) for score in scores[1:]]
 
     def get_user_most_played(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[MapPlaycount] | None:
         return [self._convert_most_played(map, user_id) for map in ossapi.user_beatmaps(user_id, type=UserBeatmapType.MOST_PLAYED, offset=(page-1)*length, limit=length)]
