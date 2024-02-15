@@ -65,6 +65,9 @@ class Score:
             extra_metadata = self.extra_metadata
         )
 
+    def get_total_hits(self):
+        return self.count_300 + self.count_100 + self.count_50 + self.count_miss
+
 @dataclass
 class User:
     
