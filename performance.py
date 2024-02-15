@@ -16,15 +16,15 @@ logger = get_logger("performance")
 class SimulatedScore:
     beatmap_id: int
     mode: int
-    mods = 0
-    n300 = 0
-    n100 = 0
-    n50 = 0
-    nMiss = 0
-    nGeki = 0
-    nKatu = 0
-    max_combo = 0
-    acc = 0
+    mods: int = 0
+    n300: int = 0
+    n100: int = 0
+    n50: int = 0
+    nMiss: int = 0
+    nGeki: int = 0
+    nKatu: int = 0
+    max_combo: int = 0
+    acc: float = 0
 
 class PerformanceSystem:
     
@@ -87,23 +87,32 @@ class RosuForkPerformanceSystem(PerformanceSystem):
             for key in score.__dict__.keys():
                 match key:
                     case "mods":
-                        calc.set_mods(score.mods)
+                        if score.mods:
+                            calc.set_mods(score.mods)
                     case "n300":
-                        calc.set_n300(score.n300)
+                        if score.n300:
+                            calc.set_n300(score.n300)
                     case "n100":
-                        calc.set_n100(score.n100)
+                        if score.n100:
+                            calc.set_n100(score.n100)
                     case "n50":
-                        calc.set_n50(score.n50)
+                        if score.n50:
+                            calc.set_n50(score.n50)
                     case "nMiss":
-                        calc.set_n_misses(score.nMiss)
+                        if score.nMiss:
+                            calc.set_n_misses(score.nMiss)
                     case "nGeki":
-                        calc.set_n_geki(score.nGeki)
+                        if score.nGeki:
+                            calc.set_n_geki(score.nGeki)
                     case "nKatu":
-                        calc.set_n_katu(score.nKatu)
+                        if score.nKatu:
+                            calc.set_n_katu(score.nKatu)
                     case "acc":
-                        calc.set_acc(score.acc)
+                        if score.acc:
+                            calc.set_acc(score.acc)
                     case "max_combo":
-                        calc.set_combo(score.max_combo)
+                        if score.max_combo:
+                            calc.set_combo(score.max_combo)
             return calc.performance(map).pp
         except:
             logger.error(f"Failed to calculate performance for score {score.id} (BeatmapID: {score.beatmap_id})", exc_info=True)
@@ -114,3 +123,9 @@ performance_systems: Dict[str, PerformanceSystem] = {
     'bancho':   RosuForkPerformanceSystem('rosu-pp-rs_0.10.0', Beatmap_rosu, Calculator_rosu),
     'titanic':  RosuForkPerformanceSystem('titanic-pp-rs_0.0.5', Beatmap_titanic, Calculator_titanic),
 }
+
+def by_version(version: str) -> PerformanceSystem | None:
+    for system in performance_systems.values():
+        if system.name == version:
+            return system
+    return None
