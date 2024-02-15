@@ -45,6 +45,9 @@ class DBBeatmapset(Base):
 
     beatmaps   = relationship('DBBeatmap', back_populates='beatmapset')
 
+    def get_url(self):
+        return f"https://osu.ppy.sh/s/{self.id}"
+
 class DBBeatmap(Base):
     
     __tablename__ = 'beatmaps'
@@ -78,6 +81,9 @@ class DBBeatmap(Base):
         if not self.beatmapset:
             return self.version
         return f"{self.beatmapset.artist} - {self.beatmapset.title} [{self.version}]"
+    
+    def get_url(self):
+        return f"https://osu.ppy.sh/b/{self.id}"
 
     def get_total_hits(self):
         return self.count_circles + self.count_sliders + self.count_spinners
