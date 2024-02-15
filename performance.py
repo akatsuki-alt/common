@@ -25,6 +25,7 @@ class SimulatedScore:
     nKatu: int = 0
     max_combo: int = 0
     acc: float = 0
+    passed_objects: int = 0
 
 class PerformanceSystem:
     
@@ -113,6 +114,9 @@ class RosuForkPerformanceSystem(PerformanceSystem):
                     case "max_combo":
                         if score.max_combo:
                             calc.set_combo(score.max_combo)
+                    case "passed_objects":
+                        if score.passed_objects:
+                            calc.set_passed_objects(score.passed_objects)
             return calc.performance(map).pp
         except:
             logger.error(f"Failed to calculate performance for score {score.id} (BeatmapID: {score.beatmap_id})", exc_info=True)
