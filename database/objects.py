@@ -203,6 +203,49 @@ class DBScore(Base):
     def get_total_hits(self):
         return self.count_300 + self.count_100 + self.count_50 + self.count_miss
 
+class DBClan(Base):
+
+    id = Column('clan_id', Integer, primary_key=True)
+    server = Column('server', String, primary_key=True)
+    owner = Column('owner_id', Integer)
+    name = Column('name', String)
+    tag = Column('tag', String)
+    description = Column('description', String)
+    icon = Column('icon', String)
+    status = Column('status', Integer)
+
+class DBClanStats(Base):
+    
+    __tablename__ = 'clan_stats'
+    
+    id = Column('clan_id', Integer, primary_key=True)
+    server = Column('server', String, primary_key=True)
+    ranked_score = Column('ranked_score', BigInteger)
+    total_score = Column('total_score', BigInteger)
+    play_count = Column('play_count', Integer)
+    replays_watched = Column('replays_watched', Integer)
+    total_hits = Column('total_hits', Integer)
+    accuracy = Column('accuracy', Float)
+    pp = Column('pp', Float)
+    first_places = Column('first_places', Integer)
+    rank_pp = Column('rank_pp', Integer)
+    rank_1s = Column('rank_1s', Integer)
+
+class DBClanStatsCompact(Base):
+    
+    __tablename__ = 'live_clan_leaderboard'
+    
+    id = Column('clan_id', Integer, primary_key=True)
+    server = Column('server', String, primary_key=True)
+    ranked_score = Column('ranked_score', BigInteger)
+    total_score = Column('total_score', BigInteger)
+    play_count = Column('play_count', Integer)
+    accuracy = Column('accuracy', Float)
+    pp = Column('pp', Float)
+    first_places = Column('first_places', Integer)
+    rank_pp = Column('rank_pp', Integer)
+    rank_1s = Column('rank_1s', Integer)
+
 class DBMapPlaycount(Base):
     
     __tablename__ = 'user_most_played'
