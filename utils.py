@@ -25,7 +25,7 @@ def download_beatmap(beatmap_id, check_MD5: str = None, force_download=False, sk
         return True
 
     if not skip_mirror:
-        if result := _catboy_download(beatmap_id):
+        if result := _osudirect_download(beatmap_id):
             local_MD5 = BinaryFile(f"{config.storage}/beatmaps/{beatmap_id}.osu.gz").get_hash()
             if check_MD5 and local_MD5 != check_MD5:
                 logger.warning(f"Mirror likely have outdated beatmap for {beatmap_id} (local: {local_MD5}, remote: {check_MD5})")
