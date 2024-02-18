@@ -53,8 +53,12 @@ class RosuForkPerformanceSystem(PerformanceSystem):
         try:
             beatmap = get_beatmap_file(score.beatmap_id)
             if beatmap is None:
+                logger.warn(f"Can't recalculate {score.id}! (BeatmapID: {score.beatmap_id} not found)")
                 return 0.0
-            map = self.beatmap_class(bytes=beatmap)
+            if score.beatmap_md5 != beatmap[1]:
+                logger.warn(f"Can't recalculate {score.id}! (BeatmapMD5: {score.beatmap_md5} != {beatmap[1]})")
+                return 0.0
+            map = self.beatmap_class(bytes=beatmap[0])
             calc = self.calculator_class(
                 mode = score.mode,
                 mods = score.mods,
@@ -82,8 +86,9 @@ class RosuForkPerformanceSystem(PerformanceSystem):
         try:
             beatmap = get_beatmap_file(score.beatmap_id)
             if beatmap is None:
+                logger.warn(f"Can't recalculate {score.id}! (BeatmapID: {score.beatmap_id} not found)")
                 return 0.0
-            map = self.beatmap_class(bytes=beatmap)
+            map = self.beatmap_class(bytes=beatmap[0])
             calc = self.calculator_class(mode = score.mode)
             for key in score.__dict__.keys():
                 match key:

@@ -4,6 +4,7 @@ from common.app import ossapi, database, config
 from common.files import BinaryFile, exists
 from common.logging import get_logger
 from ossapi import Beatmap, Beatmapset
+from typing import Tuple
 
 import common.servers as servers
 import time
@@ -116,11 +117,11 @@ def get_beatmap(beatmap_id: int, force_fetch: bool = False) -> DBBeatmap | None:
                 logger.exception(f"Failed to get beatmap {beatmap_id}")
                 return None
             
-def get_beatmap_file(beatmap_id: int) -> bytes:
+def get_beatmap_file(beatmap_id: int) -> Tuple[bytes, str]:
     if not get_beatmap(beatmap_id):
         return None
     file = BinaryFile(f"{config.storage}/beatmaps/{beatmap_id}.osu.gz")
     if not file.exists():
         return
     file.load_data()
-    return file.data
+    return file.data, file.get_hash()
