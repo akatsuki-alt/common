@@ -11,7 +11,7 @@ DATE_FORMAT = "%a, %d %b %Y %H:%M:%S GMT"
 class TitanicAPI(ServerAPI):
     
     def __init__(self):
-        super().__init__("titanic")
+        super().__init__("titanic", supports_lb_tracking=True)
         self._last_response = time.time()
     
     def _get(self, url) -> requests.Response:

@@ -297,6 +297,7 @@ class ServerAPI:
     server_name: str = None
     supports_rx: bool = False
     supports_clans: bool = False
+    supports_lb_tracking: bool = False
 
     def get_pp_system(self, mode: int, relax: int) -> str:
         return

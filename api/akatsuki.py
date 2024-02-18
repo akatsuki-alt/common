@@ -10,7 +10,7 @@ import time
 class AkatsukiAPI(ServerAPI):
     
     def __init__(self):
-        super().__init__("akatsuki", supports_rx=True, supports_clans=True)
+        super().__init__("akatsuki", supports_rx=True, supports_clans=True, supports_lb_tracking=True)
         self._last_response = time.time()
     
     def _get(self, url) -> requests.Response:
