@@ -25,7 +25,7 @@ def download_beatmap(beatmap_id, check_MD5: str = None, force_download=False, sk
         return True
 
     if not skip_mirror:
-        if result := _osudirect_download(beatmap_id):
+        if result := _catboy_download(beatmap_id):
             local_MD5 = BinaryFile(f"{config.storage}/beatmaps/{beatmap_id}.osu.gz").get_hash()
             if check_MD5 and local_MD5 != check_MD5:
                 logger.warning(f"Mirror likely have outdated beatmap for {beatmap_id} (local: {local_MD5}, remote: {check_MD5})")
@@ -50,6 +50,22 @@ def _osudirect_download(beatmap_id) -> bool:
     file.data = response.content
     file.save_data()
     return True
+
+def _catboy_download(beatmap_id) -> bool:
+    response = requests.get(
+        f"https://catboy.best/osu/{beatmap_id}",
+        headers=DEFAULT_HEADERS,
+    )
+    if not response.ok:
+        logger.warning(f"GET {response.url} {response.status_code}")
+        #logger.warning(f"{response.text}")
+        return False
+    #logger.info(f"GET {response.url} {response.status_code}")
+    file = BinaryFile(f"{config.storage}/beatmaps/{beatmap_id}.osu.gz")
+    file.data = response.content
+    file.save_data()
+    return True
+
 
 def _ppy_download(beatmap_id) -> bool:
     response = requests.get(
