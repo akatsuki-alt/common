@@ -204,6 +204,8 @@ class DBScore(Base):
         return self.count_300 + self.count_100 + self.count_50 + self.count_miss
 
 class DBClan(Base):
+    
+    __tablename__ = 'clans'
 
     id = Column('clan_id', Integer, primary_key=True)
     server = Column('server', String, primary_key=True)
@@ -220,6 +222,8 @@ class DBClanStats(Base):
     
     id = Column('clan_id', Integer, primary_key=True)
     server = Column('server', String, primary_key=True)
+    mode = Column('mode', SmallInteger, primary_key=True)
+    relax = Column('relax', SmallInteger, primary_key=True)
     ranked_score = Column('ranked_score', BigInteger)
     total_score = Column('total_score', BigInteger)
     play_count = Column('play_count', Integer)
@@ -237,6 +241,8 @@ class DBClanStatsCompact(Base):
     
     id = Column('clan_id', Integer, primary_key=True)
     server = Column('server', String, primary_key=True)
+    mode = Column('mode', SmallInteger, primary_key=True)
+    relax = Column('relax', SmallInteger, primary_key=True)
     ranked_score = Column('ranked_score', BigInteger)
     total_score = Column('total_score', BigInteger)
     play_count = Column('play_count', Integer)

@@ -175,6 +175,7 @@ class Stats:
             d_rank=self.d_rank,
             extra_metadata=self.extra_metadata
         )        
+
     def to_db_compact(self) -> DBStatsCompact:
         return DBStatsCompact(
             id=self.user_id,
@@ -192,6 +193,82 @@ class Stats:
             replays_watched=self.replays_watched,
             total_hits=self.total_hits,
             accuracy=self.accuracy
+        )
+
+@dataclass
+class Clan:
+    
+    id: int = 0
+    server: str = None
+    owner: int = 0
+    name: str = None
+    tag: str = None
+    description: str = None
+    icon: str = None
+    status: int = 0
+    
+    def to_db(self) -> DBClan:
+        return DBClan(
+            id=self.id,
+            server=self.server,
+            owner=self.owner,
+            name=self.name,
+            tag=self.tag,
+            description=self.description,
+            icon=self.icon,
+            status=self.status
+        )
+
+@dataclass
+class ClanStats:
+    
+    id: int = 0
+    server: str = None
+    mode: int = 0
+    relax: int = 0
+    ranked_score: int = 0
+    total_score: int = 0
+    play_count: int = 0
+    replays_watched: int = 0
+    total_hits: int = 0
+    accuracy: float = 0.0
+    pp: float = 0.0
+    first_places: int = 0
+    rank_pp: int = 0
+    rank_1s: int = 0
+    
+    def to_db(self) -> DBClanStats:
+        return DBClanStats(
+            id=self.id,
+            server=self.server,
+            mode=self.mode,
+            relax=self.relax,
+            ranked_score=self.ranked_score,
+            total_score=self.total_score,
+            play_count=self.play_count,
+            replays_watched=self.replays_watched,
+            total_hits=self.total_hits,
+            accuracy=self.accuracy,
+            pp=self.pp,
+            first_places=self.first_places,
+            rank_pp=self.rank_pp,
+            rank_1s=self.rank_1s
+        )
+        
+    def to_db_compact(self) -> DBClanStatsCompact:
+        return DBClanStatsCompact(
+            id=self.id,
+            server=self.server,
+            mode=self.mode,
+            relax=self.relax,
+            ranked_score=self.ranked_score,
+            total_score=self.total_score,
+            play_count=self.play_count,
+            accuracy=self.accuracy,
+            pp=self.pp,
+            first_places=self.first_places,
+            rank_pp=self.rank_pp,
+            rank_1s=self.rank_1s
         )
 
 @dataclass
@@ -219,6 +296,7 @@ class ServerAPI:
     
     server_name: str = None
     supports_rx: bool = False
+    supports_clans: bool = False
 
     def get_pp_system(self, mode: int, relax: int) -> str:
         return
@@ -247,5 +325,11 @@ class ServerAPI:
     def get_leaderboard(self, mode: int, relax: int, page: int, length: int, inactive = False, sort: SortType = SortType.PP) -> List[Tuple[User, Stats]] | None:
         return None
     
+    def get_clan_leaderboard(self, mode: int, relax: int, page: int, length: int) -> List[Tuple[Clan, ClanStats]] | None:
+        return None
+
+    def get_clan_leaderboard_1s(self, mode: int, relax: int, page: int, length: int) -> List[Tuple[Clan, ClanStats]] | None:
+        return None
+
     def ping_server(self) -> bool:
         return False
