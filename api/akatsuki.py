@@ -269,7 +269,10 @@ class AkatsukiAPI(ServerAPI):
         req = self._get(f"https://akatsuki.gg/api/v1/clans/stats/all?m={mode}&p={page}&l={min(length, 100)}&rx={relax}")
         if not req.ok:
             return
-        return [(self._convert_clan_compact(data), self._convert_clan_stats(data['chosen_mode'], data['id'], mode, relax)) for data in req.json()['clans']]
+        lb = req.json()['clans']
+        if not lb:
+            return
+        return [(self._convert_clan_compact(data), self._convert_clan_stats(data['chosen_mode'], data['id'], mode, relax)) for data in lb]
 
     def get_clan_leaderboard_1s(self, mode: int, relax: int, page: int, length: int) -> List[Tuple[Clan, ClanStats]] | None:
         length = min(length, 100)
@@ -278,6 +281,8 @@ class AkatsukiAPI(ServerAPI):
             return
         rank_offset = ((page-1)*length)+1
         data = req.json()['clans']
+        if not data:
+            return
         return [(self._convert_clan_compact(data[x]), self._convert_clan_stats(data[x], data[x]['clan'], mode, relax, x+rank_offset)) for x in range(len(data))]
 
     def ping_server(self) -> bool:
