@@ -104,9 +104,10 @@ class AkatsukiAPI(ServerAPI):
     
     def _convert_clan_compact(self, json: dict):
         if 'id' in json: # Performance
-            return Clan(id=json['id'], name=json['name'])
+            return Clan(server=self.server_name, id=json['id'], name=json['name'])
         else: # First places
             return Clan(
+                server=self.server_name,
                 id = json['clan'],
                 name = json['name'],
                 tag = json['tag']
@@ -114,6 +115,7 @@ class AkatsukiAPI(ServerAPI):
     
     def _convert_clan(self, json: dict):
         return Clan(
+            server=self.server_name,
             id = json['id'],
             name = json['name'],
             tag = json['tag'],
@@ -257,6 +259,12 @@ class AkatsukiAPI(ServerAPI):
             return
         return [(self._convert_user(data), self._convert_stats(data['chosen_mode'], data['id'], mode, relax, sort)) for data in users]
     
+    def get_clan_info(self, clan_id: int, mode: int, relax: int) -> Tuple[Clan, ClanStats] | None:
+        req = self._get(f"https://akatsuki.gg/api/v1/clans/stats?id={clan_id}&m={mode}&rx={relax}")
+        if not req.ok:
+            return
+        return self._convert_clan(req.json()['clan']), self._convert_clan_stats(req.json()['clan']['chosen_mode'], req.json()['clan']['id'], mode, relax)
+            
     def get_clan_leaderboard(self, mode: int, relax: int, page: int, length: int) -> List[Tuple[Clan, ClanStats]] | None:
         req = self._get(f"https://akatsuki.gg/api/v1/clans/stats/all?m={mode}&p={page}&l={min(length, 100)}&rx={relax}")
         if not req.ok:

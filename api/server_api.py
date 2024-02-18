@@ -325,6 +325,9 @@ class ServerAPI:
     def get_leaderboard(self, mode: int, relax: int, page: int, length: int, inactive = False, sort: SortType = SortType.PP) -> List[Tuple[User, Stats]] | None:
         return None
     
+    def get_clan_info(self, clan_id: int, mode: int, relax: int) -> Tuple[Clan, ClanStats] | None:
+        return None
+    
     def get_clan_leaderboard(self, mode: int, relax: int, page: int, length: int) -> List[Tuple[Clan, ClanStats]] | None:
         return None
 
