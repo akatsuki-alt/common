@@ -142,6 +142,8 @@ class BanchoAPI(ServerAPI):
 
     def get_user_recent(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] | None:
         scores = ossapi.user_scores(user_id, mode=self._mode(mode), offset=(page-1)*length, limit=length, type=ScoreType.RECENT)
+        if not scores:
+            return []
         return [self._convert_score(scores[0])] + [self._convert_score(score, recalc_pp=False) for score in scores[1:]]
 
     def get_user_most_played(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[MapPlaycount] | None:
