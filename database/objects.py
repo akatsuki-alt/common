@@ -349,3 +349,10 @@ class DBBotLink(Base):
     default_relax = Column('default_relax', SmallInteger)
     links = Column('servers', JSONB)
     preferences = Column('preferences', JSONB)
+
+class DBServerPreferences(Base):
+    
+    __tablename__ = "server_preferences"
+    
+    guild_id = Column('guild_id', BigInteger, primary_key=True)
+    prefix = Column('prefix', String)
