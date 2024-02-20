@@ -128,7 +128,8 @@ class DBStatsTemp(Base):
     level = Column('level', Float)
     accuracy = Column('accuracy', Float)
     pp = Column('pp', Float)
-
+    first_places = Column('first_places', Integer)
+    
     global_rank = Column('global_rank', Integer)
     country_rank = Column('country_rank', Integer)
     global_score_rank = Column('global_score_rank', Integer)
@@ -142,7 +143,8 @@ class DBStatsTemp(Base):
     b_rank = Column('b_rank', Integer)
     c_rank = Column('c_rank', Integer)
     d_rank = Column('d_rank', Integer)
-
+    clears = Column('clears', Integer)
+    
     extra_metadata = Column('extra_metadata', JSONB)
     discord_id = Column('discord_id', BigInteger)
 
@@ -166,7 +168,7 @@ class DBStats(Base):
     level = Column('level', Float)
     accuracy = Column('accuracy', Float)
     pp = Column('pp', Float)
-
+    first_places = Column('first_places', Integer)
     global_rank = Column('global_rank', Integer)
     country_rank = Column('country_rank', Integer)
     global_score_rank = Column('global_score_rank', Integer)
@@ -180,6 +182,7 @@ class DBStats(Base):
     b_rank = Column('b_rank', Integer)
     c_rank = Column('c_rank', Integer)
     d_rank = Column('d_rank', Integer)
+    clears = Column('clears', Integer)
 
     extra_metadata = Column('extra_metadata', JSONB)
 
