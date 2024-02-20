@@ -108,6 +108,44 @@ class DBUser(Base):
     
     extra_metadata = Column('extra_metadata', JSONB)
 
+class DBStatsTemp(Base):
+
+    __tablename__ = 'stats_temp'
+    
+    server = Column('server', String, primary_key=True)
+    user_id = Column('user_id', Integer, primary_key=True)
+    mode = Column('mode', SmallInteger, primary_key=True)
+    relax = Column('relax', SmallInteger, primary_key=True)
+    date = Column('date', DateTime, primary_key=True)
+    
+    ranked_score = Column('ranked_score', BigInteger)
+    total_score = Column('total_score', BigInteger)
+    play_count = Column('play_count', Integer)
+    play_time = Column('play_time', Integer)
+    replays_watched = Column('replays_watched', Integer)
+    total_hits = Column('total_hits', Integer)
+    max_combo = Column('max_combo', Integer)
+    level = Column('level', Float)
+    accuracy = Column('accuracy', Float)
+    pp = Column('pp', Float)
+
+    global_rank = Column('global_rank', Integer)
+    country_rank = Column('country_rank', Integer)
+    global_score_rank = Column('global_score_rank', Integer)
+    country_score_rank = Column('country_score_rank', Integer)
+    
+    xh_rank = Column('xh_rank', Integer)
+    x_rank = Column('x_rank', Integer)
+    sh_rank = Column('sh_rank', Integer)
+    s_rank = Column('s_rank', Integer)
+    a_rank = Column('a_rank', Integer)
+    b_rank = Column('b_rank', Integer)
+    c_rank = Column('c_rank', Integer)
+    d_rank = Column('d_rank', Integer)
+
+    extra_metadata = Column('extra_metadata', JSONB)
+    discord_id = Column('discord_id', BigInteger)
+
 class DBStats(Base):
 
     __tablename__ = 'stats'
@@ -144,6 +182,16 @@ class DBStats(Base):
     d_rank = Column('d_rank', Integer)
 
     extra_metadata = Column('extra_metadata', JSONB)
+
+    def copy(self, discord_id: int) -> DBStatsTemp:
+        stats = DBStatsTemp()
+        for k,v in self.__dict__.items():
+            if k.startswith("_"):
+                continue
+            setattr(stats, k, v)
+        stats.date = datetime.now()
+        stats.discord_id = discord_id
+        return stats
 
 class DBStatsCompact(Base):
 
