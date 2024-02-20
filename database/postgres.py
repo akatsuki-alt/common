@@ -17,17 +17,28 @@ class Postgres:
             echo_pool=None,
             echo=None
         )
-
-        self.engine
+        self.engine_ro = create_engine(
+            f'postgresql://{username}:{password}@{host}:{port}/{username}',
+            pool_pre_ping=True,
+            pool_recycle=900,
+            pool_timeout=5,
+            echo_pool=None,
+            echo=None
+        ).execution_options(postgresql_readonly=True)
 
         Base.metadata.create_all(bind=self.engine)
 
         self.logger = logging.getLogger('postgres')
         self.sessionmaker = sessionmaker(bind=self.engine)
+        self.sessionmaker_ro = sessionmaker(bind=self.engine_ro)
 
     @property
     def session(self) -> Session:
         return self.sessionmaker()
+
+    @property
+    def readonly_session(self) -> Session:
+        return self.sessionmaker_ro()
 
     @contextmanager
     def managed_session(self):
