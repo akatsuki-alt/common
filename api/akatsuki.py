@@ -285,5 +285,8 @@ class AkatsukiAPI(ServerAPI):
             return
         return [(self._convert_clan_compact(data[x]), self._convert_clan_stats(data[x], data[x]['clan'], mode, relax, x+rank_offset)) for x in range(len(data))]
 
+    def get_user_pfp(self, user_id: int) -> str:
+        return f"https://a.akatsuki.gg/{user_id}"
+
     def ping_server(self) -> bool:
         return self._get(f"https://akatsuki.gg/api/v1/ping").ok

@@ -335,5 +335,8 @@ class ServerAPI:
     def get_clan_leaderboard_1s(self, mode: int, relax: int, page: int, length: int) -> List[Tuple[Clan, ClanStats]] | None:
         return None
 
+    def get_user_pfp(self, user_id: int) -> str:
+        return ""
+    
     def ping_server(self) -> bool:
         return False

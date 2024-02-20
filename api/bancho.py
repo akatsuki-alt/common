@@ -167,3 +167,6 @@ class BanchoAPI(ServerAPI):
 
     def get_leaderboard(self, mode: int, relax: int, page: int, length: int, inactive=False, sort: SortType = SortType.PP) -> List[Tuple[User, Stats]] | None:
         return [(self._convert_user_compact(stats.user), self._convert_stats(stats, mode)) for stats in ossapi.ranking(mode=self._mode(mode), type=RankingType.PERFORMANCE if sort == SortType.PP else RankingType.SCORE, cursor=Cursor(page=page, length=length)).ranking]
+
+    def get_user_pfp(self, user_id: int) -> str:
+        return f"https://a.ppy.sh/{user_id}"

@@ -186,5 +186,8 @@ class TitanicAPI(ServerAPI):
             return None
         return [(self._convert_user(json['user']), self._convert_stats(json['user']['stats'][mode], json['user']['id'], sort)) for json in req.json()]
     
+    def get_user_pfp(self, user_id: int) -> str:
+        return f"https://osu.lekuru.xyz/a/{user_id}"
+    
     def ping_server(self) -> bool:
         return self._get(f"https://osu.lekuru.xyz/").ok
