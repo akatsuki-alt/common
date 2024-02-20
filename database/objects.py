@@ -288,6 +288,7 @@ class DBBotLink(Base):
     __tablename__ = "bot_links"
     
     discord_id = Column('discord_id', BigInteger, primary_key=True)
+    permissions = Column('permissions', SmallInteger)
     default_server = Column('default_server', String)
     default_mode = Column('default_mode', SmallInteger)
     default_relax = Column('default_relax', SmallInteger)
