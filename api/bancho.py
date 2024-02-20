@@ -94,6 +94,10 @@ class BanchoAPI(ServerAPI):
             b_rank=-1, # TODO: use osu alt api for this
             c_rank=-1,
             d_rank=-1,
+            clears=-1, 
+            medals_unlocked=-1,
+            first_places=-1,
+            followers=stats.user.follower_count
         )
         
     def _convert_most_played(self, json: BeatmapPlaycount, user_id: int) -> MapPlaycount:
@@ -112,7 +116,6 @@ class BanchoAPI(ServerAPI):
             username_history = [user.username],
             country = user.country_code,
             latest_activity = user.last_visit,
-            followers = user.follower_count,
             banned = True if user.is_restricted else False, # Null for some reason
             is_bot = user.is_bot
         )
@@ -126,7 +129,6 @@ class BanchoAPI(ServerAPI):
             country = user.country_code,
             registered_on = user.join_date,
             latest_activity = user.last_visit,
-            followers = user.follower_count,
             banned = True if user.is_restricted else False, # Null for some reason
             is_bot = user.is_bot,
         )

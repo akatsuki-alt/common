@@ -147,7 +147,7 @@ class DBStatsTemp(Base):
     medals_unlocked = Column('medals_unlocked', Integer)
 
     extra_metadata = Column('extra_metadata', JSONB)
-    discord_id = Column('discord_id', BigInteger)
+    discord_id = Column('discord_id', BigInteger, primary_key=True)
 
 class DBStats(Base):
 

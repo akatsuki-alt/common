@@ -80,8 +80,6 @@ class User:
     registered_on: datetime = None
     latest_activity: datetime = None
     favourite_mode: int = 0
-    followers: int = 0
-    medals_unlocked: int = 0
     banned: bool = False
     is_bot: bool = False
     
@@ -98,8 +96,6 @@ class User:
             registered_on = self.registered_on,
             latest_activity = self.latest_activity,
             favourite_mode = self.favourite_mode,
-            followers = self.followers,
-            medals_unlocked = self.medals_unlocked,
             banned = self.banned,
             is_bot = self.is_bot,
             extra_metadata = self.extra_metadata
@@ -124,7 +120,8 @@ class Stats:
     level: float = 0.0
     accuracy: float = 0.0
     pp: float = 0.0
-    
+    first_places: int = 0
+
     global_rank: int = 0
     country_rank: int = 0
     global_score_rank: int = 0
@@ -138,7 +135,11 @@ class Stats:
     b_rank: int = 0
     c_rank: int = 0
     d_rank: int = 0 
-    
+    clears: int = 0
+
+    followers: int = 0
+    medals_unlocked: int = 0
+
     score: float = 0.0
     leaderboard_type: str = "pp"
     
@@ -173,6 +174,10 @@ class Stats:
             b_rank=self.b_rank,
             c_rank=self.c_rank,
             d_rank=self.d_rank,
+            clears=self.clears,
+            followers=self.followers,
+            medals_unlocked=self.medals_unlocked,
+            first_places=self.first_places,
             extra_metadata=self.extra_metadata
         )        
 

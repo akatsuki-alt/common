@@ -62,7 +62,6 @@ class AkatsukiAPI(ServerAPI):
             registered_on = datetime.datetime.fromisoformat(json['registered_on']),
             latest_activity = datetime.datetime.fromisoformat(json['latest_activity']),
             favourite_mode = json['favourite_mode'],
-            followers = try_get(json, 'followers', 0)
         )
 
     def _convert_stats(self, json: dict, user_id: int, mode: int, relax: int, leaderboard_type = "pp") -> Stats: 

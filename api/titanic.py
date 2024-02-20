@@ -32,7 +32,6 @@ class TitanicAPI(ServerAPI):
             registered_on=datetime.datetime.strptime(json['created_at'], DATE_FORMAT),
             latest_activity=datetime.datetime.strptime(json['latest_activity'], DATE_FORMAT),
             favourite_mode=json['preferred_mode'],
-            followers=-1,
             banned=json['restricted'],
             extra_metadata={'groups': [group['group_id'] for group in json['groups']]}
         )
@@ -72,6 +71,9 @@ class TitanicAPI(ServerAPI):
             b_rank=json['b_count'],
             c_rank=json['c_count'],
             d_rank=json['d_count'],
+            clears=sum([x for x in json.keys() if x.startswith('count_')]),
+            followers=-1,
+            medals_unlocked=-1, # TODO
             extra_metadata={'ppv1': json['ppv1']}
         )
 
