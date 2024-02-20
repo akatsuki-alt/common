@@ -101,8 +101,6 @@ class DBUser(Base):
     registered_on = Column('registered', DateTime)
     latest_activity = Column('latest_activity', DateTime)
     favourite_mode = Column('favourite_mode', SmallInteger)
-    followers = Column('followers', Integer)
-    medals_unlocked = Column('medals_unlocked', Integer)
     banned = Column('banned', Boolean)
     is_bot = Column('is_bot', Boolean)
     
@@ -144,7 +142,10 @@ class DBStatsTemp(Base):
     c_rank = Column('c_rank', Integer)
     d_rank = Column('d_rank', Integer)
     clears = Column('clears', Integer)
-    
+
+    followers = Column('followers', Integer)
+    medals_unlocked = Column('medals_unlocked', Integer)
+
     extra_metadata = Column('extra_metadata', JSONB)
     discord_id = Column('discord_id', BigInteger)
 
@@ -183,6 +184,9 @@ class DBStats(Base):
     c_rank = Column('c_rank', Integer)
     d_rank = Column('d_rank', Integer)
     clears = Column('clears', Integer)
+
+    followers = Column('followers', Integer)
+    medals_unlocked = Column('medals_unlocked', Integer)
 
     extra_metadata = Column('extra_metadata', JSONB)
 
