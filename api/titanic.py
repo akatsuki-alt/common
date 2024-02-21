@@ -126,7 +126,7 @@ class TitanicAPI(ServerAPI):
             return []
         return [self._convert_score(json, user_id, relax) for json in scores]
 
-    def get_user_first(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 50) -> List[Score]:
+    def get_user_1s(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 50) -> Tuple[List[Score], int]:
         length = min(length, 50)
         mode = ['osu', 'taiko', 'fruits', 'mania'][mode]
         req = self._get(f"https://osu.lekuru.xyz/api/profile/{user_id}/first/{mode}?limit={length}&offset={length*(page-1)}")
@@ -135,7 +135,7 @@ class TitanicAPI(ServerAPI):
         scores = req.json()
         if not scores:
             return []
-        return [self._convert_score(json, user_id, relax) for json in scores]
+        return [self._convert_score(json, user_id, relax) for json in scores], len(scores) # TODO
 
     def get_user_recent(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 50) -> List[Score]:
         length = min(length, 50)

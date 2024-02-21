@@ -310,7 +310,7 @@ class ServerAPI:
     def get_user_best(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score] :
         return None
     
-    def get_user_1s(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score]:
+    def get_user_1s(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> Tuple[List[Score], int]:
         return None
     
     def get_user_recent(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score]:

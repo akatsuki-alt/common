@@ -182,14 +182,14 @@ class AkatsukiAPI(ServerAPI):
             return
         return [self._convert_score(json, user_id, relax) for json in scores]
 
-    def get_user_1s(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score]:
+    def get_user_1s(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> Tuple[List[Score], int]:
         req = self._get(f"https://akatsuki.gg/api/v1/users/scores/first?mode={mode}&p={page}&l={min(length, 100)}&rx={relax}&id={user_id}")
         if not req.ok:
-            return []
-        scores = req.json()['scores']
-        if not scores:
-            return []
-        return [self._convert_score(json, user_id, relax) for json in scores]
+            return [], 0
+        scores = req.json()
+        if not scores['scores']:
+            return [], 0
+        return [self._convert_score(json, user_id, relax) for json in scores['scores']], scores['count']
     
     def get_user_recent(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score]:
         req = self._get(f"https://akatsuki.gg/api/v1/users/scores/recent?mode={mode}&p={page}&l={min(length, 100)}&rx={relax}&id={user_id}")
