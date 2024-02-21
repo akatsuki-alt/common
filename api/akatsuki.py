@@ -64,7 +64,7 @@ class AkatsukiAPI(ServerAPI):
             favourite_mode = json['favourite_mode'],
         )
 
-    def _convert_stats(self, json: dict, user_id: int, mode: int, relax: int, leaderboard_type = "pp") -> Stats: 
+    def _convert_stats(self, json: dict, user_id: int, mode: int, relax: int, leaderboard_type = "pp", first_places=0) -> Stats: 
         score = 0
         if leaderboard_type == "pp":
             score=json['pp']
@@ -87,6 +87,7 @@ class AkatsukiAPI(ServerAPI):
             level=json['level'],
             accuracy=json['accuracy'],
             pp=json['pp'],
+            first_places=first_places,
             global_rank=json['global_leaderboard_rank'],
             country_rank=json['country_leaderboard_rank'],
             global_score_rank=0, # TODO
@@ -189,7 +190,7 @@ class AkatsukiAPI(ServerAPI):
         scores = req.json()
         if not scores['scores']:
             return [], 0
-        return [self._convert_score(json, user_id, relax) for json in scores['scores']], scores['count']
+        return [self._convert_score(json, user_id, relax) for json in scores['scores']], scores['total']
     
     def get_user_recent(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score]:
         req = self._get(f"https://akatsuki.gg/api/v1/users/scores/recent?mode={mode}&p={page}&l={min(length, 100)}&rx={relax}&id={user_id}")
@@ -236,7 +237,8 @@ class AkatsukiAPI(ServerAPI):
             elif relax == 2:
                 max_mode = 1
             for mode in range(max_mode):
-                stats.append(self._convert_stats(json['stats'][relax][modes[mode]], user_id, mode, relax))
+                _, count = self.get_user_1s(user_id, mode, relax, length=1)
+                stats.append(self._convert_stats(json['stats'][relax][modes[mode]], user_id, mode, relax, first_places=count))
         return self._convert_user(json), stats
 
     def get_map_status(self, beatmap_id: int) -> int:
