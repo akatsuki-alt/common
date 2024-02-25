@@ -49,6 +49,7 @@ class Postgres:
             self.logger.fatal(f'Transaction failed: {e}', exc_info=e)
             self.logger.fatal('Performing rollback...')
             session.rollback()
+            raise e
         finally:
             session.close()
 
