@@ -97,7 +97,7 @@ def _try_multiple(func, args, _retries=3, _delay=1) -> Optional[object]:
             else:
                 return func(args)
         except Exception as e:
-            logger.exception(f"Failed to get {func.__name__} {args} ({e})")
+            logger.error(f"Failed to get {func.__name__} {args} ({e})")
             tries += 1
             time.sleep(_delay)
     return None
