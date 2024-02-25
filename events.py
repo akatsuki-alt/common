@@ -28,6 +28,7 @@ class EventHandler:
 @dataclass
 class LeaderboardUpdateEvent:
     server: str
+    type: str
     users_updated: int
 
     def __repr__(self) -> str:
