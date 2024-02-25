@@ -259,6 +259,19 @@ class DBScore(Base):
     def get_total_hits(self):
         return self.count_300 + self.count_100 + self.count_50 + self.count_miss
 
+class DBFirstPlace(Base):
+    
+    __tablename__ = 'first_places'
+    
+    id = Column('score_id', Integer, primary_key=True)
+    user_id = Column('user_id', Integer)
+    server = Column('server', String, primary_key=True)
+    mode = Column('mode', SmallInteger, primary_key=True)
+    relax = Column('relax', SmallInteger, primary_key=True)
+    beatmap_id = Column('beatmap_id', Integer)
+    date = Column('date', Date, primary_key=True)
+
+
 class DBClan(Base):
     
     __tablename__ = 'clans'
