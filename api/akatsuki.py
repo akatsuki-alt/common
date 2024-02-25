@@ -73,7 +73,7 @@ class AkatsukiAPI(ServerAPI):
                 DBStatsCompact.relax == relax,
                 DBStatsCompact.server == self.server_name,
                 DBStatsCompact.leaderboard_type == "score",
-            )).first():
+            ).first()):
                 return user.global_rank, user.country_rank
             return 0,0
 
@@ -86,6 +86,19 @@ class AkatsukiAPI(ServerAPI):
         rank = global_rank if global_rank else json['global_leaderboard_rank']
         rank_country = country_rank if country_rank else json['country_leaderboard_rank']
         global_score, country_score = self._get_score_rank(user_id, mode, relax)
+        # lol
+        with database.session as session:
+            def get_count(rank):
+                return session.query(DBScore).filter(DBScore.server == self.server_name, DBScore.user_id == user_id, DBScore.mode == mode, DBScore.relax == relax, DBScore.rank == rank, DBScore.completed == 3).count()
+            clears = session.query(DBScore).filter(DBScore.server == self.server_name, DBScore.user_id == user_id, DBScore.mode == mode, DBScore.relax == relax, DBScore.completed == 3).count()
+            xh_rank = get_count("XH")+get_count("SSH")+get_count("SSHD")
+            x_rank = get_count("X")+get_count("SS")
+            sh_rank = get_count("SH")+get_count("SHD")
+            s_rank = get_count("S")
+            a_rank = get_count("A")
+            b_rank = get_count("B")
+            c_rank = get_count("C")
+            d_rank = get_count("D")
         return Stats(
             server=self.server_name,
             leaderboard_type=leaderboard_type,
@@ -108,14 +121,15 @@ class AkatsukiAPI(ServerAPI):
             country_rank=rank_country,
             global_score_rank=global_score,
             country_score_rank=country_score,
-            xh_rank=0, # TODO
-            x_rank=0, # TODO
-            sh_rank=0, # TODO
-            s_rank=0, # TODO
-            a_rank=0, # TODO
-            b_rank=0, # TODO
-            c_rank=0, # TODO
-            d_rank=0, # TODO
+            clears=clears,
+            xh_rank=xh_rank,
+            x_rank=x_rank,
+            sh_rank=sh_rank,
+            s_rank=s_rank,
+            a_rank=a_rank,
+            b_rank=b_rank,
+            c_rank=c_rank,
+            d_rank=d_rank,
         )
     
     def _convert_clan_compact(self, json: dict):
