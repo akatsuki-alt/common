@@ -243,6 +243,7 @@ class DBScore(Base):
     pp = Column('pp', Float)
     score = Column('score', Integer)
     mods = Column('mods', Integer)
+    mods_lazer = Column('mods_lazer', JSONB)
     mode = Column('mode', SmallInteger)
     relax = Column('relax', SmallInteger)
     completed = Column('completed', SmallInteger)
