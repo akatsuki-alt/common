@@ -1,7 +1,8 @@
+from common.database.objects import DBStatsCompact
 from common.performance import performance_systems
 from common.api.server_api import *
 from common.utils import try_get
-
+from common.app import database
 from typing import List, Tuple
 
 import requests
@@ -64,12 +65,27 @@ class AkatsukiAPI(ServerAPI):
             favourite_mode = json['favourite_mode'],
         )
 
-    def _convert_stats(self, json: dict, user_id: int, mode: int, relax: int, leaderboard_type = "pp", first_places=0) -> Stats: 
+    def _get_score_rank(self, user_id: int, mode: int, relax: int) -> int:
+        with database.session as session:
+            if (user := session.query(DBStatsCompact).filter(
+                DBStatsCompact.id == user_id,
+                DBStatsCompact.mode == mode,
+                DBStatsCompact.relax == relax,
+                DBStatsCompact.server == self.server_name,
+                DBStatsCompact.leaderboard_type == "score",
+            )).first():
+                return user.global_rank, user.country_rank
+            return 0,0
+
+    def _convert_stats(self, json: dict, user_id: int, mode: int, relax: int, leaderboard_type = "pp", first_places=0, global_rank=0, country_rank=0) -> Stats: 
         score = 0
         if leaderboard_type == "pp":
             score=json['pp']
         elif leaderboard_type == "score":
             score=json['ranked_score']
+        rank = global_rank if global_rank else json['global_leaderboard_rank']
+        rank_country = country_rank if country_rank else json['country_leaderboard_rank']
+        global_score, country_score = self._get_score_rank(user_id, mode, relax)
         return Stats(
             server=self.server_name,
             leaderboard_type=leaderboard_type,
@@ -88,10 +104,10 @@ class AkatsukiAPI(ServerAPI):
             accuracy=json['accuracy'],
             pp=json['pp'],
             first_places=first_places,
-            global_rank=json['global_leaderboard_rank'],
-            country_rank=json['country_leaderboard_rank'],
-            global_score_rank=0, # TODO
-            country_score_rank=0, # TODO
+            global_rank=rank,
+            country_rank=rank_country,
+            global_score_rank=global_score,
+            country_score_rank=country_score,
             xh_rank=0, # TODO
             x_rank=0, # TODO
             sh_rank=0, # TODO
@@ -255,11 +271,16 @@ class AkatsukiAPI(ServerAPI):
         req = self._get(f"https://akatsuki.gg/api/v1/leaderboard?mode={mode}&p={page}&l={length}&rx={relax}&sort={sort_type}")
         if not req.ok:
             return
-        users = req.json()['users']
-        if not users:
+        data = req.json()['users']
+        if not data:
             return
-        return [(self._convert_user(data), self._convert_stats(data['chosen_mode'], data['id'], mode, relax, sort)) for data in users]
-    
+        users = list()
+        x = page*length
+        for user in data:
+            users.append((self._convert_user(user), self._convert_stats(user['chosen_mode'], user['id'], mode, relax, sort, global_rank=x)))
+            x += 1
+        return users    
+
     def get_clan_info(self, clan_id: int, mode: int, relax: int) -> Tuple[Clan, ClanStats] | None:
         req = self._get(f"https://akatsuki.gg/api/v1/clans/stats?id={clan_id}&m={mode}&rx={relax}")
         if not req.ok:
