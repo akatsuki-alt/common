@@ -86,7 +86,7 @@ def _from_api_beatmapset(beatmapset: Beatmapset) -> DBBeatmapset:
     return dbset
 
 def get_beatmapset(beatmapset_id: int, force_fetch: bool = False) -> DBBeatmapset | None:
-    with database.session as session:
+    with database.managed_session() as session:
         if (dbset := session.query(DBBeatmapset).filter(DBBeatmapset.id == beatmapset_id).first()) and not force_fetch:
             return dbset
         else:
@@ -104,7 +104,7 @@ def get_beatmapset(beatmapset_id: int, force_fetch: bool = False) -> DBBeatmapse
                 return None
             
 def get_beatmap(beatmap_id: int, force_fetch: bool = False) -> DBBeatmap | None:
-    with database.session as session:
+    with database.managed_session() as session:
         if (dbmap := session.query(DBBeatmap).filter(DBBeatmap.id == beatmap_id).first()) and not force_fetch:
             return dbmap
         else:

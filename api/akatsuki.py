@@ -66,7 +66,7 @@ class AkatsukiAPI(ServerAPI):
         )
 
     def _get_score_rank(self, user_id: int, mode: int, relax: int) -> int:
-        with database.session as session:
+        with database.managed_session() as session:
             if (user := session.query(DBStatsCompact).filter(
                 DBStatsCompact.id == user_id,
                 DBStatsCompact.mode == mode,
@@ -87,7 +87,7 @@ class AkatsukiAPI(ServerAPI):
         rank_country = country_rank if country_rank else json['country_leaderboard_rank']
         global_score, country_score = self._get_score_rank(user_id, mode, relax)
         # lol
-        with database.session as session:
+        with database.managed_session() as session:
             def get_count(rank):
                 return session.query(DBScore).filter(DBScore.server == self.server_name, DBScore.user_id == user_id, DBScore.mode == mode, DBScore.relax == relax, DBScore.rank == rank, DBScore.completed == 3).count()
             clears = session.query(DBScore).filter(DBScore.server == self.server_name, DBScore.user_id == user_id, DBScore.mode == mode, DBScore.relax == relax, DBScore.completed == 3).count()

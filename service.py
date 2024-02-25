@@ -28,7 +28,7 @@ class RepeatedTask(Task):
         self.interval = interval
         
     def can_run(self) -> bool:
-        with database.session as session:
+        with database.managed_session() as session:
             if (task := session.get(DBTask, self.task_name)):
                 return (datetime.now() - task.last_run) >= timedelta(seconds=self.interval)
         return True
@@ -40,7 +40,7 @@ class ScheduledTask(Task):
         self.time = time
     
     def can_run(self) -> bool:
-        with database.session as session:
+        with database.managed_session() as session:
             if (task := session.get(DBTask, self.task_name)):
                 if (datetime.now() - task.last_run) <= timedelta(hours=23):
                     return False
@@ -86,7 +86,7 @@ class TaskedService(Service):
                     if not result:
                         self.logger.error(f'Failed to run task {task.task_name}!')
                     else:
-                        with database.session as session:
+                        with database.managed_session() as session:
                             if (dbtask := session.get(DBTask, task.task_name)):
                                 dbtask.last_run = datetime.now()
                             else:
