@@ -41,7 +41,7 @@ class TitanicAPI(ServerAPI):
         if leaderboard_type == "pp":
             score=json['pp']
         elif leaderboard_type == "score":
-            score=json['ranked_score']
+            score=json['rscore']
         return Stats(
             server=self.server_name,
             leaderboard_type=leaderboard_type,
@@ -186,7 +186,12 @@ class TitanicAPI(ServerAPI):
         req = self._get(f"https://osu.lekuru.xyz/api/rankings/{sort_type}/{mode_str}?limit=50&offset={length*(page-1)}")
         if not req.ok:
             return None
-        return [(self._convert_user(json['user']), self._convert_stats(json['user']['stats'][mode], json['user']['id'], sort)) for json in req.json()]
+        users = list()
+        for json in req.json():
+            if len(json['user']['stats']) != 4:
+                continue # Banned user???
+            users.append((self._convert_user(json['user']), self._convert_stats(json['user']['stats'][mode],json['user']['id'], sort)))
+        return users
     
     def get_user_pfp(self, user_id: int) -> str:
         return f"https://osu.lekuru.xyz/a/{user_id}"
