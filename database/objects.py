@@ -376,6 +376,12 @@ class DBAkatsukiPlaytime(Base):
     relax = Column('relax', SmallInteger, primary_key=True)
     playtime = Column('playtime', Integer)
 
+class DBAkatsukiLovedMap(Base):
+    
+    __tablename__ = "akatsuki_loved_maps"
+    
+    beatmap_id = Column('beatmap_id', Integer, primary_key=True)
+
 class DBBotLink(Base):
     
     __tablename__ = "bot_links"

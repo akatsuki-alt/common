@@ -22,13 +22,14 @@ class AkatsukiAPI(ServerAPI):
         self._last_response = time.time()
         return requests.get(url)
 
-    def _convert_score(self, json: dict, user_id: int, relax: int) -> Score:
+    def _convert_score(self, json: dict, user_id: int, relax: int, beatmap_id: int = 0) -> Score:
+        bid = beatmap_id if beatmap_id else json['beatmap']['beatmap_id']
         return Score(
             id=int(json['id']),
             user_id=user_id,
             server=self.server_name,
             beatmap_md5=json['beatmap_md5'],
-            beatmap_id=json['beatmap']['beatmap_id'],
+            beatmap_id=bid,
             max_combo=json['max_combo'],
             full_combo=json['full_combo'],
             mods=json['mods'],
@@ -286,6 +287,16 @@ class AkatsukiAPI(ServerAPI):
             return -2
         return req.json()['ranked']-1
     
+    def get_map_scores(self, beatmap_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score]:
+        sort = "pp" if relax > 0 else "score"
+        req = self._get(f"https://akatsuki.gg/api/v1/scores?sort={sort},desc&m={mode}&relax={relax}&b={beatmap_id}&p={page}&l={length}")
+        if not req.ok:
+            return []
+        scores = req.json()['scores']
+        if not scores:
+            return []
+        return [self._convert_score(json, json['user']['id'], relax, beatmap_id=beatmap_id) for json in scores]
+
     def get_leaderboard(self, mode: int, relax: int, page: int, length: int, inactive=False, sort: SortType = SortType.PP) -> List[Tuple[User, Stats]] | None:
         length = min(length, 500)
         sort_type = sort

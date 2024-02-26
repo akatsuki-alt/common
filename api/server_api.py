@@ -328,6 +328,9 @@ class ServerAPI:
     def get_map_status(self, beatmap_id: int) -> int:
         return -2
     
+    def get_map_scores(self, beatmap_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[Score]:
+        return None
+    
     def get_leaderboard(self, mode: int, relax: int, page: int, length: int, inactive = False, sort: SortType = SortType.PP) -> List[Tuple[User, Stats]] | None:
         return None
     
