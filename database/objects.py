@@ -200,6 +200,21 @@ class DBStats(Base):
         stats.discord_id = discord_id
         return stats
 
+    def update(self, date, global_rank: int, country_rank: int, score_rank: int, country_score_rank: int):
+        stats = DBStats()
+        for k,v in self.__dict__.items():
+            if k.startswith("_"):
+                continue
+            setattr(stats, k, v)
+        stats.date = date
+        if global_rank > 0:
+            stats.global_rank = global_rank
+            stats.country_rank = country_rank
+        if score_rank > 0:
+            stats.global_score_rank = score_rank
+            stats.country_score_rank = country_score_rank
+        return stats
+
 class DBStatsCompact(Base):
 
     __tablename__ = 'live_leaderboard'
