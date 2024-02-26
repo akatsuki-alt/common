@@ -367,6 +367,15 @@ class DBBeatmapPack(Base):
     no_diff_reduction = Column('no_diff_reduction', Boolean)
     beatmapsets = Column('beatmapsets_id', ARRAY(Integer))
 
+class DBAkatsukiPlaytime(Base):
+    
+    __tablename__ = "akatsuki_playtime"
+    
+    user_id = Column('user_id', Integer, primary_key=True)
+    mode = Column('mode', SmallInteger, primary_key=True)
+    relax = Column('relax', SmallInteger, primary_key=True)
+    playtime = Column('playtime', Integer)
+
 class DBBotLink(Base):
     
     __tablename__ = "bot_links"
