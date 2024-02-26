@@ -65,19 +65,18 @@ class AkatsukiAPI(ServerAPI):
             favourite_mode = json['favourite_mode'],
         )
 
-    def _get_score_rank(self, user_id: int, mode: int, relax: int) -> int:
-        with database.managed_session() as session:
-            if (user := session.query(DBStatsCompact).filter(
-                DBStatsCompact.id == user_id,
-                DBStatsCompact.mode == mode,
-                DBStatsCompact.relax == relax,
-                DBStatsCompact.server == self.server_name,
-                DBStatsCompact.leaderboard_type == "score",
-            ).first()):
-                return user.global_rank, user.country_rank
-            return 0,0
+    def _get_score_rank(self, user_id: int, mode: int, relax: int, session) -> int:
+        if (user := session.query(DBStatsCompact).filter(
+            DBStatsCompact.id == user_id,
+            DBStatsCompact.mode == mode,
+            DBStatsCompact.relax == relax,
+            DBStatsCompact.server == self.server_name,
+            DBStatsCompact.leaderboard_type == "score",
+        ).first()):
+            return user.global_rank, user.country_rank
+        return 0,0
 
-    def _convert_stats(self, json: dict, user_id: int, mode: int, relax: int, leaderboard_type = "pp", first_places=0, global_rank=0, country_rank=0) -> Stats: 
+    def _convert_stats(self, json: dict, user_id: int, mode: int, relax: int, leaderboard_type = "pp", full=False, first_places=0, global_rank=0, country_rank=0) -> Stats: 
         score = 0
         if leaderboard_type == "pp":
             score=json['pp']
@@ -85,23 +84,26 @@ class AkatsukiAPI(ServerAPI):
             score=json['ranked_score']
         rank = global_rank if global_rank else json['global_leaderboard_rank']
         rank_country = country_rank if country_rank else json['country_leaderboard_rank']
-        global_score, country_score = self._get_score_rank(user_id, mode, relax)
         playtime = json['playtime']
-        # lol
-        with database.managed_session() as session:
-            if (db_playtime := session.get(DBAkatsukiPlaytime, (user_id, mode, relax))):
-                playtime = max(db_playtime.playtime, playtime)
-            def get_count(rank):
-                return session.query(DBScore).filter(DBScore.server == self.server_name, DBScore.user_id == user_id, DBScore.mode == mode, DBScore.relax == relax, DBScore.rank == rank, DBScore.completed == 3).count()
-            clears = session.query(DBScore).filter(DBScore.server == self.server_name, DBScore.user_id == user_id, DBScore.mode == mode, DBScore.relax == relax, DBScore.completed == 3).count()
-            xh_rank = get_count("XH")+get_count("SSH")+get_count("SSHD")
-            x_rank = get_count("X")+get_count("SS")
-            sh_rank = get_count("SH")+get_count("SHD")
-            s_rank = get_count("S")
-            a_rank = get_count("A")
-            b_rank = get_count("B")
-            c_rank = get_count("C")
-            d_rank = get_count("D")
+        if full:
+            with database.managed_session() as session:
+                global_score, country_score = self._get_score_rank(user_id, mode, relax, session)
+
+                if (db_playtime := session.get(DBAkatsukiPlaytime, (user_id, mode, relax))):
+                    playtime = max(db_playtime.playtime, playtime)
+                def get_count(rank):
+                    return session.query(DBScore).filter(DBScore.server == self.server_name, DBScore.user_id == user_id, DBScore.mode == mode, DBScore.relax == relax, DBScore.rank == rank, DBScore.completed == 3).count()
+                clears = session.query(DBScore).filter(DBScore.server == self.server_name, DBScore.user_id == user_id, DBScore.mode == mode, DBScore.relax == relax, DBScore.completed == 3).count()
+                xh_rank = get_count("XH")+get_count("SSH")+get_count("SSHD")
+                x_rank = get_count("X")+get_count("SS")
+                sh_rank = get_count("SH")+get_count("SHD")
+                s_rank = get_count("S")
+                a_rank = get_count("A")
+                b_rank = get_count("B")
+                c_rank = get_count("C")
+                d_rank = get_count("D")
+        else:
+            clears = xh_rank = x_rank = sh_rank = s_rank = a_rank = b_rank = c_rank = d_rank = global_score = country_score = -1
         return Stats(
             server=self.server_name,
             leaderboard_type=leaderboard_type,
@@ -271,7 +273,7 @@ class AkatsukiAPI(ServerAPI):
                 max_mode = 1
             for mode in range(max_mode):
                 _, count = self.get_user_1s(user_id, mode, relax, length=1)
-                stats.append(self._convert_stats(json['stats'][relax][modes[mode]], user_id, mode, relax, first_places=count))
+                stats.append(self._convert_stats(json['stats'][relax][modes[mode]], user_id, mode, relax, first_places=count, full=True))
         return self._convert_user(json), stats
 
     def get_map_status(self, beatmap_id: int) -> int:
