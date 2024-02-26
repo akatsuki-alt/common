@@ -86,8 +86,11 @@ class AkatsukiAPI(ServerAPI):
         rank = global_rank if global_rank else json['global_leaderboard_rank']
         rank_country = country_rank if country_rank else json['country_leaderboard_rank']
         global_score, country_score = self._get_score_rank(user_id, mode, relax)
+        playtime = json['playtime']
         # lol
         with database.managed_session() as session:
+            if (db_playtime := session.get(DBAkatsukiPlaytime, (user_id, mode, relax))):
+                playtime = max(db_playtime.playtime, playtime)
             def get_count(rank):
                 return session.query(DBScore).filter(DBScore.server == self.server_name, DBScore.user_id == user_id, DBScore.mode == mode, DBScore.relax == relax, DBScore.rank == rank, DBScore.completed == 3).count()
             clears = session.query(DBScore).filter(DBScore.server == self.server_name, DBScore.user_id == user_id, DBScore.mode == mode, DBScore.relax == relax, DBScore.completed == 3).count()
@@ -109,7 +112,7 @@ class AkatsukiAPI(ServerAPI):
             ranked_score=json['ranked_score'],
             total_score=json['total_score'],
             play_count=json['playcount'],
-            play_time=json['playtime'],
+            play_time=playtime,
             max_combo=json['max_combo'],
             replays_watched=try_get(json, 'replays_watched', 0),
             total_hits=json['total_hits'],
