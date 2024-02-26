@@ -52,4 +52,3 @@ class Postgres:
             raise e
         finally:
             session.close()
-

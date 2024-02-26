@@ -1,10 +1,13 @@
 from common.utils import OSSAPI_GAMEMODES, download_beatmap, _try_multiple
 from common.database.objects import DBBeatmapset, DBBeatmap
+from common.database.wrapper import session_wrapper
 from common.app import ossapi, database, config
 from common.files import BinaryFile, exists
 from common.logging import get_logger
 from ossapi import Beatmap, Beatmapset
 from typing import Tuple
+
+from sqlalchemy.orm import Session
 
 import common.servers as servers
 import time
@@ -85,37 +88,37 @@ def _from_api_beatmapset(beatmapset: Beatmapset) -> DBBeatmapset:
     }
     return dbset
 
-def get_beatmapset(beatmapset_id: int, force_fetch: bool = False) -> DBBeatmapset | None:
-    with database.managed_session() as session:
-        if (dbset := session.query(DBBeatmapset).filter(DBBeatmapset.id == beatmapset_id).first()) and not force_fetch:
+@session_wrapper
+def get_beatmapset(beatmapset_id: int, force_fetch: bool = False, session: Session | None = None) -> DBBeatmapset | None:
+    if (dbset := session.query(DBBeatmapset).filter(DBBeatmapset.id == beatmapset_id).first()) and not force_fetch:
+        return dbset
+    else:
+        try:
+            beatmapset = _try_multiple(ossapi.beatmapset, beatmapset_id)
+            dbset = _from_api_beatmapset(beatmapset)
+            session.merge(dbset)
+            for beatmap in beatmapset.beatmaps:
+                session.merge(_from_api_beatmap(beatmap))
+            session.commit()
+            time.sleep(0.4)
             return dbset
-        else:
-            try:
-                beatmapset = _try_multiple(ossapi.beatmapset, beatmapset_id)
-                dbset = _from_api_beatmapset(beatmapset)
-                session.merge(dbset)
-                for beatmap in beatmapset.beatmaps:
-                    session.merge(_from_api_beatmap(beatmap))
+        except:
+            logger.exception(f"Failed to get beatmapset {beatmapset_id}")
+            return None
+
+@session_wrapper
+def get_beatmap(beatmap_id: int, force_fetch: bool = False, session: Session | None = None) -> DBBeatmap | None:
+    if (dbmap := session.query(DBBeatmap).filter(DBBeatmap.id == beatmap_id).first()) and not force_fetch:
+        return dbmap
+    else:
+        try:
+            beatmap = _try_multiple(ossapi.beatmap, beatmap_id)
+            if get_beatmapset(beatmap.beatmapset_id, force_fetch=force_fetch, session=session):
                 session.commit()
-                time.sleep(0.4)
-                return dbset
-            except:
-                logger.exception(f"Failed to get beatmapset {beatmapset_id}")
-                return None
-            
-def get_beatmap(beatmap_id: int, force_fetch: bool = False) -> DBBeatmap | None:
-    with database.managed_session() as session:
-        if (dbmap := session.query(DBBeatmap).filter(DBBeatmap.id == beatmap_id).first()) and not force_fetch:
-            return dbmap
-        else:
-            try:
-                beatmap = _try_multiple(ossapi.beatmap, beatmap_id)
-                if get_beatmapset(beatmap.beatmapset_id, force_fetch=force_fetch):
-                    session.commit()
-                    return session.get(DBBeatmap, (beatmap_id))
-            except:
-                logger.exception(f"Failed to get beatmap {beatmap_id}")
-                return None
+                return session.get(DBBeatmap, (beatmap_id))
+        except:
+            logger.exception(f"Failed to get beatmap {beatmap_id}")
+            return None
             
 def get_beatmap_file(beatmap_id: int) -> Tuple[bytes, str]:
     if not get_beatmap(beatmap_id):
