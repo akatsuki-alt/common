@@ -254,7 +254,7 @@ class AkatsukiAPI(ServerAPI):
             return []
         return [self._convert_most_played(json, user_id) for json in most_played]
     
-    def get_user_info(self, user_id: int | str) -> Tuple[User, List[Stats]] | None:
+    def get_user_info(self, user_id: int | str, mode: int | None = None, relax: int | None = None) -> Tuple[User, List[Stats]] | None:
         if type(user_id) == str:
             user_id = self._lookup_user(user_id)
             if not user_id:
@@ -265,15 +265,19 @@ class AkatsukiAPI(ServerAPI):
         json = req.json()
         stats = list()
         modes = ['std', 'taiko', 'ctb', 'mania']
-        for relax in range(3):
+        for rx in range(3):
             max_mode = 4
-            if relax == 1:
+            if rx == 1:
                 max_mode = 3
-            elif relax == 2:
+            elif rx == 2:
                 max_mode = 1
-            for mode in range(max_mode):
-                _, count = self.get_user_1s(user_id, mode, relax, length=1)
-                stats.append(self._convert_stats(json['stats'][relax][modes[mode]], user_id, mode, relax, first_places=count, full=True))
+            for m in range(max_mode):
+                if mode is not None and m != mode:
+                    continue
+                if relax is not None and rx != relax:
+                    continue
+                _, count = self.get_user_1s(user_id, m, rx, length=1)
+                stats.append(self._convert_stats(json['stats'][rx][modes[m]], user_id, m, rx, first_places=count, full=True))
         return self._convert_user(json), stats
 
     def get_map_status(self, beatmap_id: int) -> int:

@@ -322,7 +322,7 @@ class ServerAPI:
     def get_user_most_played(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[MapPlaycount]:
         return None
     
-    def get_user_info(self, user_id: int | str) -> Tuple[User, List[Stats]] | None:
+    def get_user_info(self, user_id: int | str, mode: int | None = None, relax: int | None = None) -> Tuple[User, List[Stats]] | None:
         return None
 
     def get_map_status(self, beatmap_id: int) -> int:

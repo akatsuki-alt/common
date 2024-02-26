@@ -151,16 +151,22 @@ class BanchoAPI(ServerAPI):
     def get_user_most_played(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 100) -> List[MapPlaycount] | None:
         return [self._convert_most_played(map, user_id) for map in ossapi.user_beatmaps(user_id, type=UserBeatmapType.MOST_PLAYED, offset=(page-1)*length, limit=length)]
 
-    def get_user_info(self, user_id: int | str) -> Tuple[User, List[Stats]] | None:
+    def get_user_info(self, user_id: int | str, mode: int | None = None, relax: int | None = None) -> Tuple[User, List[Stats]] | None:
         stats = []
-        mode = 0
-        for gamemode in [GameMode.OSU, GameMode.TAIKO, GameMode.CATCH, GameMode.MANIA]:
-            current_mode_profile = ossapi.user(user_id, mode=gamemode)
-            if not current_mode_profile:
-                continue
+        modes = [GameMode.OSU, GameMode.TAIKO, GameMode.CATCH, GameMode.MANIA]
+        if mode is None:
+            mode = 0
+            for gamemode in modes:
+                current_mode_profile = ossapi.user(user_id, mode=gamemode)
+                if not current_mode_profile:
+                    continue
+                current_mode_profile.statistics.user = current_mode_profile
+                stats.append(self._convert_stats(current_mode_profile.statistics, mode))
+                mode += 1
+        else:
+            current_mode_profile = ossapi.user(user_id, mode=modes[mode])
             current_mode_profile.statistics.user = current_mode_profile
             stats.append(self._convert_stats(current_mode_profile.statistics, mode))
-            mode += 1
         return self._convert_user(current_mode_profile), stats
 
     def get_map_status(self, beatmap_id: int) -> int:
