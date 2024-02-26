@@ -294,10 +294,12 @@ class AkatsukiAPI(ServerAPI):
         if not data:
             return
         users = list()
-        x = page*length
+        overwrite = sort_type != "pp"
+        x = page*length if overwrite else 0
         for user in data:
             users.append((self._convert_user(user), self._convert_stats(user['chosen_mode'], user['id'], mode, relax, sort, global_rank=x)))
-            x += 1
+            if overwrite:
+                x += 1
         return users    
 
     def get_clan_info(self, clan_id: int, mode: int, relax: int) -> Tuple[Clan, ClanStats] | None:
