@@ -121,7 +121,7 @@ class TitanicAPI(ServerAPI):
         length = min(length, 50)
         mode = ['osu', 'taiko', 'fruits', 'mania'][mode]
         req = self._get(f"https://osu.lekuru.xyz/api/profile/{user_id}/top/{mode}?limit={length}&offset={length*(page-1)}")
-        scores = req.json()
+        scores = req.json()['scores']
         if not scores:
             return []
         return [self._convert_score(json, user_id, relax) for json in scores]
@@ -132,10 +132,10 @@ class TitanicAPI(ServerAPI):
         req = self._get(f"https://osu.lekuru.xyz/api/profile/{user_id}/first/{mode}?limit={length}&offset={length*(page-1)}")
         if not req.ok:
             return [], -1
-        scores = req.json()
+        scores = req.json()['scores']
         if not scores:
             return [], -1
-        return [self._convert_score(json, user_id, relax) for json in scores], len(scores) # TODO
+        return [self._convert_score(json, user_id, relax) for json in scores], req.json()['count']
 
     def get_user_recent(self, user_id: int, mode: int, relax: int, page: int = 1, length: int = 50) -> List[Score]:
         length = min(length, 50)
@@ -154,7 +154,7 @@ class TitanicAPI(ServerAPI):
         req = self._get(f"https://osu.lekuru.xyz/api/profile/{user_id}/pinned/{mode}?limit={length}&offset={length*(page-1)}")
         if not req.ok:
             return []
-        scores = req.json()
+        scores = req.json()['scores']
         if not scores:
             return []
         return [self._convert_score(json, user_id, relax) for json in scores]
