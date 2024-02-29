@@ -199,6 +199,8 @@ class AkatsukiAPI(ServerAPI):
         req = self._get(f"https://akatsuki.gg/api/v1/users/lookup?name={username}")
         if not req.ok:
             return 0
+        if not req.json()['users']:
+            return 0
         for lookup in req.json()['users']:
             if lookup['username'].lower() == username.lower():
                 return lookup['id']
