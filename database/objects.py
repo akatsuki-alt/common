@@ -270,7 +270,7 @@ class DBScore(Base):
     last_updated = Column('last_updated', DateTime)
     extra_metadata = Column('extra_metadata', JSONB)
     beatmap = relationship('DBBeatmap', backref='user_scores', lazy='selectin', join_depth=2)
-    
+
     def get_total_hits(self):
         return self.count_300 + self.count_100 + self.count_50 + self.count_miss
 
@@ -278,14 +278,16 @@ class DBFirstPlace(Base):
     
     __tablename__ = 'first_places'
     
-    id = Column('score_id', Integer, primary_key=True)
-    user_id = Column('user_id', Integer)
+    id = Column('score_id', BigInteger, primary_key=True)
     server = Column('server', String, primary_key=True)
-    mode = Column('mode', SmallInteger, primary_key=True)
-    relax = Column('relax', SmallInteger, primary_key=True)
+    user_id = Column('user_id', Integer)
+    mode = Column('mode', SmallInteger)
+    relax = Column('relax', SmallInteger)
     beatmap_id = Column('beatmap_id', Integer)
     date = Column('date', Date, primary_key=True)
 
+    score = relationship('DBScore', foreign_keys=[id, server], backref='user_scores', lazy='selectin', join_depth=2)
+    __table_args__ = (ForeignKeyConstraint([id, server], [DBScore.id, DBScore.server]), {})
 
 class DBClan(Base):
     
