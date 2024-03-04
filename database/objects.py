@@ -323,6 +323,9 @@ class DBClanStats(Base):
     first_places = Column('first_places', Integer)
     rank_pp = Column('rank_pp', Integer)
     rank_1s = Column('rank_1s', Integer)
+    
+    clan = relationship('DBClan', foreign_keys=[id, server], backref='clan_stats', lazy='selectin', join_depth=2)
+    __table_args__ = (ForeignKeyConstraint([id, server], [DBClan.id, DBClan.server]), {})
 
 class DBClanStatsCompact(Base):
     
@@ -340,6 +343,9 @@ class DBClanStatsCompact(Base):
     first_places = Column('first_places', Integer)
     rank_pp = Column('rank_pp', Integer)
     rank_1s = Column('rank_1s', Integer)
+    
+    clan = relationship('DBClan', foreign_keys=[id, server], backref='live_clan_leaderboard', lazy='selectin', join_depth=2)
+    __table_args__ = (ForeignKeyConstraint([id, server], [DBClan.id, DBClan.server]), {})
 
 class DBMapPlaycount(Base):
     
