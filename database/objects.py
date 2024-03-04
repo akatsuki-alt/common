@@ -76,6 +76,8 @@ class DBBeatmap(Base):
     
     last_db_update = Column('last_db_update', DateTime(timezone=True), default=datetime.now())
     beatmapset = relationship('DBBeatmapset', back_populates='beatmaps')
+    
+    scores = relationship('DBScore', back_populates='beatmap')
 
     def get_title(self):
         if not self.beatmapset:
@@ -269,7 +271,8 @@ class DBScore(Base):
     pp_system = Column('pp_system', String)
     last_updated = Column('last_updated', DateTime)
     extra_metadata = Column('extra_metadata', JSONB)
-    beatmap = relationship('DBBeatmap', backref='user_scores', lazy='selectin', join_depth=2)
+
+    beatmap = relationship('DBBeatmap', back_populates='scores')
 
     def get_total_hits(self):
         return self.count_300 + self.count_100 + self.count_50 + self.count_miss
