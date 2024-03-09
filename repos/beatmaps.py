@@ -109,13 +109,16 @@ def get_beatmapset(beatmapset_id: int, force_fetch: bool = False, session: Sessi
 @session_wrapper
 def get_beatmap(beatmap_id: int, force_fetch: bool = False, session: Session | None = None) -> DBBeatmap | None:
     if (dbmap := session.query(DBBeatmap).filter(DBBeatmap.id == beatmap_id).first()) and not force_fetch:
+        session.expunge(dbmap.beatmapset)
         return dbmap
     else:
         try:
             beatmap = _try_multiple(ossapi.beatmap, beatmap_id)
             if get_beatmapset(beatmap.beatmapset_id, force_fetch=force_fetch, session=session):
                 session.commit()
-                return session.get(DBBeatmap, (beatmap_id))
+                beatmap = session.get(DBBeatmap, (beatmap_id))
+                session.expunge(beatmap.beatmapset)
+                return beatmap
         except:
             logger.exception(f"Failed to get beatmap {beatmap_id}")
             return None
