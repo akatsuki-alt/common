@@ -197,5 +197,11 @@ class TitanicAPI(ServerAPI):
     def get_user_pfp(self, user_id: int) -> str:
         return f"https://osu.lekuru.xyz/a/{user_id}"
     
+    def get_map_status(self, beatmap_id: int) -> int:
+        req = self._get(f"https://osu.lekuru.xyz/api/beatmaps/{beatmap_id}")
+        if not req.ok:
+            return -2
+        return req.json()['status']
+    
     def ping_server(self) -> bool:
         return self._get(f"https://osu.lekuru.xyz/").ok
