@@ -75,7 +75,7 @@ class DBBeatmap(Base):
     status = Column('status', JSONB)
     
     last_db_update = Column('last_db_update', DateTime(timezone=True), default=datetime.now())
-    beatmapset = relationship('DBBeatmapset', back_populates='beatmaps')
+    beatmapset = relationship('DBBeatmapset', back_populates='beatmaps', lazy="joined")
     
     scores = relationship('DBScore', back_populates='beatmap')
 
