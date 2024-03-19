@@ -5,7 +5,6 @@ from typing import List
 import datetime
 import struct
 import gzip
-import io
 
 OA_S_PER_DAY = 8.64e4
 OA_EPOC = datetime.datetime(1899, 12, 30, 0, 0, 0, tzinfo=datetime.timezone.utc)
@@ -57,12 +56,8 @@ def generate_collection_from_db(beatmaps: List[DBBeatmap], collection_name):
 
     temp_bytes += struct.pack("i", 0)
     temp_bytes += format_str("By Piotrekol")
-    
-    file = io.BytesIO(temp_bytes)
-    file.write(format_str("o!dm8"))
-    file.write(gzip.compress(temp_bytes))
-    
-    return file
+        
+    return format_str("o!dm8") + gzip.compress(temp_bytes)
 
 def generate_collection_from_dict(beatmaps: List[dict], collection_name):
     temp_bytes = format_str("o!dm8")
@@ -87,9 +82,5 @@ def generate_collection_from_dict(beatmaps: List[dict], collection_name):
 
     temp_bytes += struct.pack("i", 0)
     temp_bytes += format_str("By Piotrekol")
-
-    file = io.BytesIO(temp_bytes)
-    file.write(format_str("o!dm8"))
-    file.write(gzip.compress(temp_bytes))
     
-    return file
+    return format_str("o!dm8") + gzip.compress(temp_bytes)
