@@ -5,6 +5,7 @@ from typing import List
 import datetime
 import struct
 import gzip
+import io
 
 OA_S_PER_DAY = 8.64e4
 OA_EPOC = datetime.datetime(1899, 12, 30, 0, 0, 0, tzinfo=datetime.timezone.utc)
@@ -33,7 +34,7 @@ def format_str(s):
     return uleb128encode(len(s)) + s
 
 
-def generate_collection_from_db(beatmaps: List[DBBeatmap], collection_name, filename):
+def generate_collection_from_db(beatmaps: List[DBBeatmap], collection_name):
     temp_bytes = format_str("o!dm8")
     temp_bytes += struct.pack("d", OADoubleNow())
     temp_bytes += format_str("N/A")
@@ -56,13 +57,14 @@ def generate_collection_from_db(beatmaps: List[DBBeatmap], collection_name, file
 
     temp_bytes += struct.pack("i", 0)
     temp_bytes += format_str("By Piotrekol")
+    
+    file = io.BytesIO(temp_bytes)
+    file.write(format_str("o!dm8"))
+    file.write(gzip.compress(temp_bytes))
+    
+    return file
 
-    with open(filename, "wb") as f:
-        f.write(format_str("o!dm8"))
-        f.write(gzip.compress(temp_bytes))
-
-
-def generate_collection_from_dict(beatmaps: List[dict], collection_name, filename):
+def generate_collection_from_dict(beatmaps: List[dict], collection_name):
     temp_bytes = format_str("o!dm8")
     temp_bytes += struct.pack("d", OADoubleNow())
     temp_bytes += format_str("N/A")
@@ -86,6 +88,8 @@ def generate_collection_from_dict(beatmaps: List[dict], collection_name, filenam
     temp_bytes += struct.pack("i", 0)
     temp_bytes += format_str("By Piotrekol")
 
-    with open(filename, "wb") as f:
-        f.write(format_str("o!dm8"))
-        f.write(gzip.compress(temp_bytes))
+    file = io.BytesIO(temp_bytes)
+    file.write(format_str("o!dm8"))
+    file.write(gzip.compress(temp_bytes))
+    
+    return file
