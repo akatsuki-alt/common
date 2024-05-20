@@ -176,7 +176,8 @@ class TitanicAPI(ServerAPI):
         if not req.ok:
             return None, None
         data = req.json()
-        return self._convert_user(data), [self._convert_stats(stats, user_id) for stats in data['stats']]
+        user = self._convert_user(data)
+        return user, [self._convert_stats(stats, user.id) for stats in data['stats']]
     
     def get_leaderboard(self, mode: int, relax: int, page: int, length: int, inactive=False, sort: SortType = SortType.PP) -> List[Tuple[User, Stats]] | None:
         length = min(length, 50)
