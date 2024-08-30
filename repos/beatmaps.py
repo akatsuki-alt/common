@@ -108,6 +108,9 @@ def get_beatmapset(beatmapset_id: int, force_fetch: bool = False, session: Sessi
 
 @session_wrapper
 def get_beatmap(beatmap_id: int, force_fetch: bool = False, session: Session | None = None) -> DBBeatmap | None:
+    if beatmap_id > 1000000000:
+        logger.warning(f"WARNING: {beatmap_id} is a titanic BSS (Not implemented)")
+        return None
     if (dbmap := session.query(DBBeatmap).filter(DBBeatmap.id == beatmap_id).first()) and not force_fetch:
         session.expunge(dbmap.beatmapset)
         return dbmap
